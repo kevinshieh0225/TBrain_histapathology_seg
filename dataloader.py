@@ -116,8 +116,8 @@ def splitdataset(img_path, mask_path, classes, preprocessing_fn):
 
 def create_trainloader(img_path, mask_path, classes, preprocessing_fn, batch_size):
     trainset, validset = splitdataset(img_path, mask_path, classes, preprocessing_fn)
-    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers = 0)
-    validloader = DataLoader(validset, batch_size=batch_size, shuffle=False, drop_last=True, num_workers = 0)
+    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers = 2)
+    validloader = DataLoader(validset, batch_size=batch_size, shuffle=False, drop_last=True, num_workers = 2)
     return trainloader, validloader
 
 if __name__ == "__main__":
