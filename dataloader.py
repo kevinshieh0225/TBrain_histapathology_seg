@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 import albumentations as albu
 import segmentation_models_pytorch as smp
+from config import receive_arg
 
 class SegmentationDataset(Dataset):
     """CamVid Dataset. Read images, apply augmentation and preprocessing transformations.
@@ -27,6 +28,8 @@ class SegmentationDataset(Dataset):
             imageslist, 
             maskslist, 
             classes=None, 
+            width=1280,
+            height=640,
             augmentation=None, 
             preprocessing=None,
     ):
@@ -36,6 +39,9 @@ class SegmentationDataset(Dataset):
         # convert str names to class values on masks
         self.class_values = [self.CLASSES.index(cls.lower()) for cls in classes]
         
+        self.w = width
+        self.h = height
+
         self.augmentation = augmentation
         self.preprocessing = preprocessing
     
@@ -44,12 +50,12 @@ class SegmentationDataset(Dataset):
         # read data
         image = cv2.imread(self.images_fps[i])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        if image.shape != (640, 1280, 3):
-            image = cv2.resize(image, (1280, 640), interpolation=cv2.INTER_LANCZOS4)
+        if image.shape != (self.h, self.w, 3):
+            image = cv2.resize(image, (self.w, self.h), interpolation=cv2.INTER_LANCZOS4)
 
         mask = cv2.imread(self.masks_fps[i], 0)
-        if mask.shape != (640, 1280, 3):
-            mask = cv2.resize(mask, (1280, 640), interpolation=cv2.INTER_LANCZOS4)  
+        if mask.shape != (self.h, self.w, 3):
+            mask = cv2.resize(mask, (self.w, self.h), interpolation=cv2.INTER_LANCZOS4)  
         mask = mask.astype('bool')
         
         # extract certain classes from mask (e.g. cars)
@@ -102,40 +108,41 @@ def get_preprocessing(preprocessing_fn):
     ]
     return albu.Compose(_transform)
 
-def splitdataset(img_path, mask_path, classes, preprocessing_fn):
+def splitdataset(img_path, mask_path, classes, width, height, preprocessing_fn):
     imagePaths = [os.path.join(img_path, image_id) for image_id in os.listdir(img_path)]
     maskPaths = [os.path.join(mask_path, image_id).replace("jpg", "png") for image_id in os.listdir(img_path)]
 
     xtrain, xvalid, ytrain, yvalid = train_test_split(imagePaths, maskPaths, test_size=0.2, random_state=42)
 
-    trainset = SegmentationDataset(xtrain, ytrain, classes=classes, augmentation=get_training_augmentation(), preprocessing=get_preprocessing(preprocessing_fn))
-    validset = SegmentationDataset(xvalid, yvalid, classes=classes, preprocessing=get_preprocessing(preprocessing_fn))
+    trainset = SegmentationDataset(xtrain, ytrain, classes, width, height, augmentation=get_training_augmentation(), preprocessing=get_preprocessing(preprocessing_fn))
+    validset = SegmentationDataset(xvalid, yvalid, classes, width, height, preprocessing=get_preprocessing(preprocessing_fn))
 
     print(f'trainset: {len(trainset)}\nvalidset: {len(validset)}\n')
     return trainset, validset
 
-def create_trainloader(img_path, mask_path, classes, preprocessing_fn, batch_size):
-    trainset, validset = splitdataset(img_path, mask_path, classes, preprocessing_fn)
+def create_trainloader(img_path, mask_path, preprocessing_fn, opts_dict):
+    classes = opts_dict['classes']
+    batch_size = opts_dict['batchsize']
+    width, height = opts_dict['aug']['resize_width'], opts_dict['aug']['resize_height']
+    trainset, validset = splitdataset(img_path, mask_path, classes, width, height, preprocessing_fn)
     trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers = 2)
     validloader = DataLoader(validset, batch_size=batch_size, shuffle=False, drop_last=True, num_workers = 2)
     return trainloader, validloader
 
 if __name__ == "__main__":
-    ENCODER = 'resnet50'
-    ENCODER_WEIGHTS = 'imagenet'
-    CLASSES = ['stas']
-    ACTIVATION = 'sigmoid' 
-    DEVICE = 'cuda'
+    opts_dict = receive_arg()
 
     batchsize = 8
     dataset_root = './SEG_Train_Datasets'
-    preprocessing_fn = smp.encoders.get_preprocessing_fn(ENCODER, ENCODER_WEIGHTS)
+    preprocessing_fn = smp.encoders.get_preprocessing_fn(
+                        opts_dict['model']['encoder_name'],
+                        opts_dict['model']['encoder_weights']
+                    )
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainloader, validloader = create_trainloader(
                                     imagePaths,
                                     maskPaths,
-                                    CLASSES,
                                     preprocessing_fn,
-                                    batchsize
+                                    opts_dict,
                                 )
