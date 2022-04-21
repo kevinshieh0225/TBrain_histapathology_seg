@@ -123,10 +123,11 @@ def splitdataset(img_path, mask_path, classes, width, height, preprocessing_fn):
 def create_trainloader(img_path, mask_path, preprocessing_fn, opts_dict):
     classes = opts_dict['classes']
     batch_size = opts_dict['batchsize']
-    width, height = opts_dict['aug']['resize_width'], opts_dict['aug']['resize_height']
+    height = opts_dict['aug']['resize_height']
+    width = height * 2
     trainset, validset = splitdataset(img_path, mask_path, classes, width, height, preprocessing_fn)
-    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers = 2)
-    validloader = DataLoader(validset, batch_size=batch_size, shuffle=False, drop_last=True, num_workers = 2)
+    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers = os.cpu_count())
+    validloader = DataLoader(validset, batch_size=batch_size, shuffle=False, drop_last=True, num_workers = os.cpu_count())
     return trainloader, validloader
 
 if __name__ == "__main__":

@@ -6,6 +6,8 @@ class Litsmp(pl.LightningModule):
     def __init__(self, opts_dict):
         super().__init__()
         self.opts_dict = opts_dict.copy()
+
+        # model initial
         model_type = self.opts_dict['model'].pop('type')
         if model_type == 'DeepLabV3Plus':
             self.model = smp.DeepLabV3Plus(
@@ -16,7 +18,12 @@ class Litsmp(pl.LightningModule):
                     **self.opts_dict['model']
                 )
         
-        self.loss = smp.utils.losses.DiceLoss()
+        # loss initial
+        loss_type = self.opts_dict['loss'].pop('type')
+        if loss_type == 'DiceLoss':
+            self.loss = smp.utils.losses.DiceLoss()
+        
+
         self.metrics = [
             smp.utils.metrics.Fscore(),
             smp.utils.metrics.IoU(),
@@ -33,7 +40,7 @@ class Litsmp(pl.LightningModule):
         x, y = batch
         y_pred = self.model(x)
         loss = self.loss(y_pred, y)
-        self.log("train loss", loss, on_epoch=True)
+        self.log(f"train loss", loss, on_epoch=True)
         record.update({'loss': loss})
         # update metrics logs
         for metric_fn in self.metrics:
@@ -46,16 +53,20 @@ class Litsmp(pl.LightningModule):
         x, y = batch
         y_pred = self.model(x)
         loss = self.loss(y_pred, y)
-        self.log("valid loss", loss, on_epoch=True, prog_bar=True)
+        self.log(f"valid loss", loss, on_epoch=True, prog_bar=True)
         for metric_fn in self.metrics:
             metric_value = metric_fn(y_pred, y)
             self.log(f'valid {metric_fn.__name__}', metric_value, on_epoch=True)
 
     def configure_optimizers(self):
+        # otimizer initial
         optim_type = self.opts_dict['optim'].pop('type')
         if optim_type == 'Adam':
             optimizer = torch.optim.Adam(self.parameters(), **self.opts_dict['optim'])
+        elif optim_type == 'SGD':
+            optimizer = torch.optim.SGD(self.parameters(), **self.opts_dict['optim'])
 
+        # scheduler initial
         sched_type = self.opts_dict['sched'].pop('type')
         if sched_type == 'CosineAnnealingWR':
             scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(

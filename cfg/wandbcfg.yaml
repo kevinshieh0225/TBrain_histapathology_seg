@@ -1,0 +1,29 @@
+aug.resize_height:
+  value: 640
+batchsize:
+  value: 8
+classes:
+  value: ['stas']
+epochs:
+  value: 2
+loss.type:
+  value: DiceLoss
+model.activation:
+  value: sigmoid
+model.encoder_name:
+  value: resnet50
+model.encoder_weights:
+  value: imagenet
+model.type:
+  value: DeepLabV3Plus
+optim.lr:
+  value: 0.0001
+optim.type:
+  value: Adam
+sched.T_0:
+  value: 4
+sched.T_mult:
+  value: 2
+sched.type:
+  value: CosineAnnealingWR
+

@@ -3,15 +3,13 @@ import segmentation_models_pytorch as smp
 
 from dataloader import create_trainloader
 from trainmodule import modeltrain
-from network import Litsmp
 
-from config import receive_arg
+from config import wandb_config
 
 def main():
-    opts_dict = receive_arg()
-
-    # model parameter
-    model = Litsmp(opts_dict)
+    project = 'TBrain_histapathology_segmentation'
+    name = 'dlv3p-Unet_resize-sweep'
+    opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
 
     # dataloader
     dataset_root = './SEG_Train_Datasets'
@@ -29,9 +27,9 @@ def main():
                             )
     # training
     modeltrain(
-        model=model,
         trainloader=trainloader,
         validloader=validloader,
+        wandb_logger=wandb_logger,
         opts_dict=opts_dict,
         )
 
