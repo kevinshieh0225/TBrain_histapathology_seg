@@ -1,3 +1,4 @@
+# https://smp.readthedocs.io/
 aug.resize_height:
   value: 640
 batchsize:
@@ -11,11 +12,11 @@ loss.type:
 model.activation:
   value: sigmoid
 model.encoder_name:
-  value: resnet50
+  value: efficientnet-b4
 model.encoder_weights:
   value: imagenet
 model.type:
-  value: DeepLabV3Plus
+  value: Unet
 optim.lr:
   value: 0.0001
 optim.type:

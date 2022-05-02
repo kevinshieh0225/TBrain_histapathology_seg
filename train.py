@@ -8,7 +8,7 @@ from config import wandb_config
 
 def main():
     project = 'TBrain_histapathology_segmentation'
-    name = 'dlv3p-Unet_resize-sweep'
+    name = 'Unet_efnb4'
     opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
 
     # dataloader

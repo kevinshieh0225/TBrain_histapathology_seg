@@ -1,0 +1,25 @@
+aug:
+  resize_height: 640
+  resize_width: 1280
+batchsize: 8
+classes:
+- stas
+epochs: 100
+expname: dlv3plus_res50-1
+loss:
+  type: DiceLoss
+model:
+  type: DeepLabV3Plus
+  activation: sigmoid
+  classes: 1
+  encoder_name: resnet50
+  encoder_weights: imagenet
+optim:
+  type: Adam
+  lr: 0.0001
+  type: Adam
+savepath: ./result/dlv3plus_res50-1
+sched:
+  T_0: 4
+  T_mult: 2
+  type: CosineAnnealingWR

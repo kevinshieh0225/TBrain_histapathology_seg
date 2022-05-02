@@ -22,14 +22,21 @@ def receive_arg():
     opts_dict['model']['classes'] = len(opts_dict['classes'])
 
     expname_base = opts_dict['expname']
-    expname = expname_base
-    num = 0
-    while(os.path.isdir(os.path.join('./result', expname))):
-        num += 1
-        expname = f'{expname_base}-{num}'
+    expname = searchnewname(expname_base)
     opts_dict['expname'] = expname
     opts_dict['savepath'] = os.path.join('./result', expname)
 
+    return opts_dict
+
+def load_wdb_config(
+        cfgpath='./result/dlv3p-Unet_resize-sweep-2/expconfig.yaml',
+        inference='/work/u7085556/TBrain_histapathology_seg'
+        ):
+    with open(cfgpath, 'r') as fp:
+        opts_dict = yaml.load(fp, Loader=yaml.FullLoader)
+    unflatten_json(opts_dict)
+    opts_dict['expname'] = cfgpath.split('/')[-2]
+    opts_dict['inference'] = inference
     return opts_dict
 
 def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
@@ -49,13 +56,6 @@ def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
         with open(ymlsavepath, 'w') as yaml_file:
             yaml.dump(opts_dict, yaml_file, default_flow_style=False)
 
-    # wandb.init(project=project, 
-    #            name=expname, 
-    #            group="DDP",
-    #            resume='auto', 
-    #            config=cfg
-    #            )
-    # opts_dict = wandb.config.as_dict()
     unflatten_json(opts_dict)
 
     opts_dict['project'] = project

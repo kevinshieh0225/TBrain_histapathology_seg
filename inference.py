@@ -1,10 +1,11 @@
-import torch
-import os
+import os, torch, cv2
 from plot import visualize
-from dataloader import splitdataset
+from dataloader import get_preprocessing
 import segmentation_models_pytorch as smp
-import os, torch
 
+from config import load_wdb_config
+from network import Litsmp
+from tqdm import tqdm
 
 def inference(model, image, device):
     x_tensor = torch.from_numpy(image).to(device).unsqueeze(0)
@@ -29,18 +30,43 @@ def inference_dataloader(
             predicted_mask=pr_mask
             )
 
+
+
 if __name__ == "__main__":
-    ENCODER = 'resnet50'
-    ENCODER_WEIGHTS = 'imagenet'
-    DEVICE = 'cuda'
-    ACTIVATION = 'sigmoid'
-    dataset_root = './SEG_Train_Datasets'
-    img_path = os.path.join(dataset_root, 'Train_Images')
-    mask_path = os.path.join(dataset_root, 'Train_Masks')
-    classes = ['stas']
-    preprocessing_fn = smp.encoders.get_preprocessing_fn(ENCODER, ENCODER_WEIGHTS)
-    trainset, testset = splitdataset(img_path, mask_path, classes, preprocessing_fn)
+    pretrain_path = './result/dlv3plus_res50-1/'
+    cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
+    weight = os.path.join(pretrain_path, 'epoch=93-step=9870.ckpt')
+    inference_path = '/work/u7085556/TBrain_histapathology_seg'
 
-    model = torch.load('./result/unet_res50_imgnet/model_weight.pth')['state_dict']
 
-    inference_dataloader(model, testset, DEVICE)
+    Public_Image = os.path.join(inference_path, 'Public_Image')
+    opts_dict = load_wdb_config(cfgpath, inference_path)
+    Public_save_path = os.path.join(inference_path, opts_dict['expname'])
+    os.makedirs(Public_save_path, exist_ok=True)
+
+    preprocess = get_preprocessing(
+                        smp.encoders.get_preprocessing_fn(
+                        opts_dict['model']['encoder_name'],
+                        opts_dict['model']['encoder_weights'])
+                    )
+
+    model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
+    model.eval()
+    height = opts_dict['aug']['resize_height']
+    width = height * 2
+    imagePaths = [image_id for image_id in os.listdir(Public_Image)]
+    for image_id in tqdm(imagePaths):
+        image = cv2.imread(os.path.join(Public_Image, image_id))
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        origin_h, origin_w, _ = image.shape
+        if image.shape != (height, width, 3):
+            image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
+        image = preprocess(image=image)['image']
+        image = torch.from_numpy(image).unsqueeze(0)
+        with torch.no_grad():
+            mask = model(image).squeeze().cpu().numpy().round()
+        mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
+        mask *= 255
+        mask = mask.astype(int)
+        image_id = image_id.replace('jpg', 'png')
+        cv2.imwrite(os.path.join(Public_save_path, image_id), mask)
