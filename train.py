@@ -8,21 +8,16 @@ from config import wandb_config
 
 def main():
     project = 'TBrain_histapathology_segmentation'
-    name = 'Unet_efnb4'
+    name = 'dlv3plus_efnb3'
     opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
 
     # dataloader
     dataset_root = './SEG_Train_Datasets'
-    preprocessing_fn = smp.encoders.get_preprocessing_fn(
-                        opts_dict['model']['encoder_name'],
-                        opts_dict['model']['encoder_weights']
-                        )
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainloader, validloader = create_trainloader(
                                 imagePaths,
                                 maskPaths,
-                                preprocessing_fn,
                                 opts_dict,
                             )
     # training

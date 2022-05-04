@@ -5,8 +5,10 @@ import os
 import cv2
 import numpy as np
 import albumentations as albu
+from albumentations.augmentations.transforms import Normalize
+from albumentations.pytorch.transforms import ToTensorV2
 import segmentation_models_pytorch as smp
-from config import receive_arg
+from config import load_wdb_config
 
 class SegmentationDataset(Dataset):
     """CamVid Dataset. Read images, apply augmentation and preprocessing transformations.
@@ -88,11 +90,7 @@ def get_training_augmentation():
     ]
     return albu.Compose(train_transform)
 
-def to_tensor(x, **kwargs):
-    return x.transpose(2, 0, 1).astype('float32')
-
-
-def get_preprocessing(preprocessing_fn):
+def get_preprocessing(norm):
     """Construct preprocessing transform
     
     Args:
@@ -103,47 +101,44 @@ def get_preprocessing(preprocessing_fn):
     
     """
     _transform = [
-        albu.Lambda(image=preprocessing_fn),
-        albu.Lambda(image=to_tensor, mask=to_tensor),
+        # Normalize(**norm),
+        Normalize(),
+        ToTensorV2(transpose_mask=True),
     ]
     return albu.Compose(_transform)
 
-def splitdataset(img_path, mask_path, classes, width, height, preprocessing_fn):
+def splitdataset(img_path, mask_path, opts_dict):
+    classes = opts_dict['classes']
+    height = opts_dict['aug']['resize_height']
+    width = height * 2
+    norm = opts_dict['norm']
+
     imagePaths = [os.path.join(img_path, image_id) for image_id in os.listdir(img_path)]
     maskPaths = [os.path.join(mask_path, image_id).replace("jpg", "png") for image_id in os.listdir(img_path)]
 
     xtrain, xvalid, ytrain, yvalid = train_test_split(imagePaths, maskPaths, test_size=0.2, random_state=42)
 
-    trainset = SegmentationDataset(xtrain, ytrain, classes, width, height, augmentation=get_training_augmentation(), preprocessing=get_preprocessing(preprocessing_fn))
-    validset = SegmentationDataset(xvalid, yvalid, classes, width, height, preprocessing=get_preprocessing(preprocessing_fn))
+    trainset = SegmentationDataset(xtrain, ytrain, classes, width, height, augmentation=get_training_augmentation(), preprocessing=get_preprocessing(norm))
+    validset = SegmentationDataset(xvalid, yvalid, classes, width, height, preprocessing=get_preprocessing(norm))
 
-    print(f'trainset: {len(trainset)}\nvalidset: {len(validset)}\n')
+    print(f'\ntrainset: {len(trainset)}\nvalidset: {len(validset)}\n')
     return trainset, validset
 
-def create_trainloader(img_path, mask_path, preprocessing_fn, opts_dict):
-    classes = opts_dict['classes']
+def create_trainloader(img_path, mask_path, opts_dict):
     batch_size = opts_dict['batchsize']
-    height = opts_dict['aug']['resize_height']
-    width = height * 2
-    trainset, validset = splitdataset(img_path, mask_path, classes, width, height, preprocessing_fn)
-    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers = os.cpu_count())
-    validloader = DataLoader(validset, batch_size=batch_size, shuffle=False, drop_last=True, num_workers = os.cpu_count())
+    trainset, validset = splitdataset(img_path, mask_path, opts_dict)
+    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers = 4)
+    validloader = DataLoader(validset, batch_size=batch_size, shuffle=False, drop_last=True, num_workers = 4)
     return trainloader, validloader
 
 if __name__ == "__main__":
-    opts_dict = receive_arg()
+    opts_dict = load_wdb_config()
 
-    batchsize = 8
     dataset_root = './SEG_Train_Datasets'
-    preprocessing_fn = smp.encoders.get_preprocessing_fn(
-                        opts_dict['model']['encoder_name'],
-                        opts_dict['model']['encoder_weights']
-                    )
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainloader, validloader = create_trainloader(
                                     imagePaths,
                                     maskPaths,
-                                    preprocessing_fn,
                                     opts_dict,
                                 )

@@ -37,6 +37,10 @@ def load_wdb_config(
     unflatten_json(opts_dict)
     opts_dict['expname'] = cfgpath.split('/')[-2]
     opts_dict['inference'] = inference
+
+    norm = norm_config('./cfg/normalize.yaml')
+    opts_dict.update(norm)
+
     return opts_dict
 
 def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
@@ -63,6 +67,9 @@ def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
     opts_dict['savepath'] = os.path.join('./result', expname)
     opts_dict['model']['classes'] = len(opts_dict['classes'])
 
+    norm = norm_config('./cfg/normalize.yaml')
+    opts_dict.update(norm)
+
     return opts_dict, wandb_logger
 
 def searchnewname(expname_base):
@@ -72,7 +79,11 @@ def searchnewname(expname_base):
         num += 1
         expname = f'{expname_base}-{num}'
     return expname
-    
+
+def norm_config(cfgpath):
+    with open(cfgpath, 'r') as fp:
+        norm = yaml.load(fp, Loader=yaml.FullLoader)
+    return norm
 
 def flatten_json(json):
     if type(json) == dict:

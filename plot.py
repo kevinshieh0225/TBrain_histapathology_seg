@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import os
-from dataloader import SegmentationDataset
+from dataloader import splitdataset
+from config import load_wdb_config
 
 def plot(name, savedir, trainhistory, validhistory):
     plt.figure(figsize=(10,5))
@@ -26,18 +27,13 @@ def visualize(**images):
 
 
 if __name__ == "__main__":
-    ENCODER = 'resnet50'
-    ENCODER_WEIGHTS = 'imagenet'
-    CLASSES = ['stas']
-    ACTIVATION = 'sigmoid' 
-    DEVICE = 'cuda'
-
-    batchsize = 8
+    opts_dict = load_wdb_config()
     dataset_root = './SEG_Train_Datasets'
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
-    dataset = SegmentationDataset(imagePaths, maskPaths, classes=['stas'])
-    image, mask = dataset[4] # get some sample
+    trainset, validset = splitdataset(imagePaths, maskPaths, opts_dict)
+    image, mask = validset[4] # get some sample
+    image = image.numpy().transpose(1, 2, 0)
     visualize(
         image=image, 
         stas_mask=mask.squeeze(),

@@ -30,7 +30,7 @@ def modeltrain(
         callbacks=[checkpoint_callback, lr_monitor],
         gpus=-1,
         amp_backend="native",
-        strategy=DDPStrategy(find_unused_parameters=False),
+        strategy=DDPStrategy(find_unused_parameters=True),
         )
     
     

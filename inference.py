@@ -33,9 +33,9 @@ def inference_dataloader(
 
 
 if __name__ == "__main__":
-    pretrain_path = './result/dlv3plus_res50-1/'
+    pretrain_path = './result/Unet_efnb4/'
     cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
-    weight = os.path.join(pretrain_path, 'epoch=93-step=9870.ckpt')
+    weight = os.path.join(pretrain_path, 'epoch=99-step=10500.ckpt')
     inference_path = '/work/u7085556/TBrain_histapathology_seg'
 
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         if image.shape != (height, width, 3):
             image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
         image = preprocess(image=image)['image']
-        image = torch.from_numpy(image).unsqueeze(0)
+        image = image.unsqueeze(0)
         with torch.no_grad():
             mask = model(image).squeeze().cpu().numpy().round()
         mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
