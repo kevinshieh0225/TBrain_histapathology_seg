@@ -1,12 +1,16 @@
 # https://smp.readthedocs.io/
 aug.resize_height:
-  value: 608
+  value: 800
+aug.resize_width:
+  value: 800
 batchsize:
-  value: 4
+  value: 8
+accumulate_grad_batches:
+  value: 2        # default: None
 classes:
   value: ['stas']
 epochs:
-  value: 240
+  value: 120
 loss.type:
   value: DiceLoss
 model.activation:

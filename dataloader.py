@@ -7,7 +7,7 @@ import albumentations as albu
 from albumentations.augmentations.transforms import Normalize
 from albumentations.pytorch.transforms import ToTensorV2
 import segmentation_models_pytorch as smp
-from config import load_wdb_config
+from config import load_wdb_config, load_dataset_root
 
 class SegmentationDataset(Dataset):
     """CamVid Dataset. Read images, apply augmentation and preprocessing transformations.
@@ -119,8 +119,7 @@ def get_preprocessing():
 def splitdataset(img_path, mask_path, opts_dict):
     classes = opts_dict['classes']
     height = opts_dict['aug']['resize_height']
-    width = height * 2
-    norm = opts_dict['norm']
+    width = opts_dict['aug']['resize_width']
 
     imagePaths = [os.path.join(img_path, image_id) for image_id in os.listdir(img_path)]
     maskPaths = [os.path.join(mask_path, image_id).replace("jpg", "png") for image_id in os.listdir(img_path)]
@@ -143,7 +142,7 @@ def create_trainloader(img_path, mask_path, opts_dict):
 if __name__ == "__main__":
     opts_dict = load_wdb_config()
 
-    dataset_root = './SEG_Train_Datasets'
+    dataset_root = load_dataset_root()['dataset_root']
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainloader, validloader = create_trainloader(

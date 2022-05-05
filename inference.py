@@ -3,7 +3,7 @@ from plot import visualize
 from dataloader import get_preprocessing
 import segmentation_models_pytorch as smp
 
-from config import load_wdb_config
+from config import load_wdb_config, load_dataset_root
 from network import Litsmp
 from tqdm import tqdm
 
@@ -36,11 +36,11 @@ if __name__ == "__main__":
     pretrain_path = './result/dlp_efn5_apex_b32_AdamW/'
     cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
     weight = os.path.join(pretrain_path, 'epoch=184-step=9805.ckpt')
-    inference_path = '/work/u7085556/TBrain_histapathology_seg'
+    ds_dict = load_dataset_root()
 
-    Public_Image = os.path.join(inference_path, 'Public_Image')
-    opts_dict = load_wdb_config(cfgpath, inference_path)
-    Public_save_path = os.path.join(inference_path, opts_dict['expname'])
+    Public_Image = ds_dict['public_root']
+    opts_dict = load_wdb_config(cfgpath)
+    Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname'])
     os.makedirs(Public_save_path, exist_ok=True)
 
     preprocess = get_preprocessing()

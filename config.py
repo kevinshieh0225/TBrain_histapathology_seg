@@ -29,19 +29,29 @@ def receive_arg():
     return opts_dict
 
 def load_wdb_config(
-        cfgpath='./result/dlv3p-Unet_resize-sweep-2/expconfig.yaml',
-        inference='/work/u7085556/TBrain_histapathology_seg'
+        cfgpath='./result/Unet_efnb4_nonorm/expconfig.yaml',
         ):
     with open(cfgpath, 'r') as fp:
         opts_dict = yaml.load(fp, Loader=yaml.FullLoader)
     unflatten_json(opts_dict)
     opts_dict['expname'] = cfgpath.split('/')[-2]
-    opts_dict['inference'] = inference
-
-    norm = norm_config('./cfg/normalize.yaml')
-    opts_dict.update(norm)
 
     return opts_dict
+
+def load_dataset_root(cfgpath = './cfg/dataset.yaml'):
+    with open(cfgpath, 'r') as fp:
+        ds_dict = yaml.load(fp, Loader=yaml.FullLoader)
+    ds_dict['dataset_root'] = os.path.join(ds_dict['root'], ds_dict['dataset_root'])
+    ds_dict['public_root'] = os.path.join(ds_dict['root'], ds_dict['public_root'])
+    ds_dict['inference_root'] = os.path.join(ds_dict['root'], ds_dict['inference_root'])
+
+    return ds_dict
+
+def load_project_name(cfgpath = './cfg/name.yaml'):
+    with open(cfgpath, 'r') as fp:
+        pjname_dict = yaml.load(fp, Loader=yaml.FullLoader)
+    
+    return pjname_dict['project'], pjname_dict['name']
 
 def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
     expname = searchnewname(name)

@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import os
 from dataloader import splitdataset
-from config import load_wdb_config
+from config import load_wdb_config, load_dataset_root
 
 def plot(name, savedir, trainhistory, validhistory):
     plt.figure(figsize=(10,5))
@@ -28,7 +28,7 @@ def visualize(**images):
 
 if __name__ == "__main__":
     opts_dict = load_wdb_config()
-    dataset_root = './SEG_Train_Datasets'
+    dataset_root = load_dataset_root()['dataset_root']
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainset, validset = splitdataset(imagePaths, maskPaths, opts_dict)
