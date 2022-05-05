@@ -1,5 +1,4 @@
 import os
-import segmentation_models_pytorch as smp
 
 from dataloader import create_trainloader
 from trainmodule import modeltrain
@@ -8,7 +7,7 @@ from config import wandb_config
 
 def main():
     project = 'TBrain_histapathology_segmentation'
-    name = 'dlv3plus_efnb3'
+    name = 'dlp_efn5_apex_b32_AdamW'
     opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
 
     # dataloader

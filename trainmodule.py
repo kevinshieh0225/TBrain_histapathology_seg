@@ -16,7 +16,7 @@ def modeltrain(
     # checkpoint
     checkpoint_callback = ModelCheckpoint(
         dirpath=save_path,
-        save_top_k=2,
+        save_top_k=1,
         monitor="valid loss",
         mode="min",
         )
@@ -29,7 +29,9 @@ def modeltrain(
         max_epochs=epochs,
         callbacks=[checkpoint_callback, lr_monitor],
         gpus=-1,
-        amp_backend="native",
+        # accumulate_grad_batches=4,
+        # amp_backend="apex",
+        # amp_level='01',
         strategy=DDPStrategy(find_unused_parameters=True),
         )
     

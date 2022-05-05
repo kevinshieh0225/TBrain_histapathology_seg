@@ -33,22 +33,17 @@ def inference_dataloader(
 
 
 if __name__ == "__main__":
-    pretrain_path = './result/Unet_efnb4/'
+    pretrain_path = './result/dlp_efn5_apex_b32_AdamW/'
     cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
-    weight = os.path.join(pretrain_path, 'epoch=99-step=10500.ckpt')
+    weight = os.path.join(pretrain_path, 'epoch=184-step=9805.ckpt')
     inference_path = '/work/u7085556/TBrain_histapathology_seg'
-
 
     Public_Image = os.path.join(inference_path, 'Public_Image')
     opts_dict = load_wdb_config(cfgpath, inference_path)
     Public_save_path = os.path.join(inference_path, opts_dict['expname'])
     os.makedirs(Public_save_path, exist_ok=True)
 
-    preprocess = get_preprocessing(
-                        smp.encoders.get_preprocessing_fn(
-                        opts_dict['model']['encoder_name'],
-                        opts_dict['model']['encoder_weights'])
-                    )
+    preprocess = get_preprocessing()
 
     model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
     model.eval()

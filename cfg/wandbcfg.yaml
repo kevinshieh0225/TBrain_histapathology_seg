@@ -1,26 +1,26 @@
 # https://smp.readthedocs.io/
 aug.resize_height:
-  value: 576
+  value: 608
 batchsize:
-  value: 8
+  value: 4
 classes:
   value: ['stas']
 epochs:
-  value: 120
+  value: 240
 loss.type:
   value: DiceLoss
 model.activation:
   value: sigmoid
 model.encoder_name:
-  value: efficientnet-b3
+  value: efficientnet-b4
 model.encoder_weights:
   value: imagenet
 model.type:
-  value: DeepLabV3Plus
+  value: Unet  #DeepLabV3Plus
 optim.lr:
   value: 0.0003
 optim.type:
-  value: Adam
+  value: AdamW
 sched.T_0:
   value: 4
 sched.T_mult:

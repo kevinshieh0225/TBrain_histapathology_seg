@@ -63,6 +63,8 @@ class Litsmp(pl.LightningModule):
         optim_type = self.opts_dict['optim'].pop('type')
         if optim_type == 'Adam':
             optimizer = torch.optim.Adam(self.parameters(), **self.opts_dict['optim'])
+        elif optim_type == 'AdamW':
+            optimizer = torch.optim.AdamW(self.parameters(), **self.opts_dict['optim'])
         elif optim_type == 'SGD':
             optimizer = torch.optim.SGD(self.parameters(), **self.opts_dict['optim'])
 

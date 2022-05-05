@@ -1,7 +1,6 @@
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
 from sklearn.model_selection import train_test_split
-import os
+import os, torch
 import cv2
 import numpy as np
 import albumentations as albu
@@ -79,18 +78,23 @@ class SegmentationDataset(Dataset):
     def __len__(self):
         return len(self.masks_fps)
 
-
+#   origin
+#   albu.HorizontalFlip(p=0.5),
+#   albu.VerticalFlip(p=0.5),        
+#   albu.HueSaturationValue(p=0.6),
+#   albu.Sharpen(p=0.5),
+#   albu.RandomBrightnessContrast(p=0.4),
 def get_training_augmentation():
     train_transform = [
-        albu.HorizontalFlip(p=0.5),
-        albu.VerticalFlip(p=0.5),        
-        albu.HueSaturationValue(p=0.6),
-        albu.Sharpen(p=0.5),
-        albu.RandomBrightnessContrast(p=0.4),
+        albu.Flip(p=0.7),
+        albu.ColorJitter(brightness=0.1, hue=0.1, p=0.8),
+        # albu.HueSaturationValue(val_shift_limit=15, p=0.8),
+        albu.Sharpen(lightness=(0.9, 1.1), p=0.5),
+        # albu.Affine()
     ]
     return albu.Compose(train_transform)
 
-def get_preprocessing(norm):
+def get_preprocessing():
     """Construct preprocessing transform
     
     Args:
@@ -100,10 +104,15 @@ def get_preprocessing(norm):
         transform: albumentations.Compose
     
     """
+    def norm_scale(x, **kwargs):
+        return x.to(torch.float32) / 255.0
+
     _transform = [
         # Normalize(**norm),
-        Normalize(),
+        # Normalize(),
+        # albu.CLAHE(always_apply=True),
         ToTensorV2(transpose_mask=True),
+        albu.Lambda(image=norm_scale),
     ]
     return albu.Compose(_transform)
 
@@ -118,8 +127,8 @@ def splitdataset(img_path, mask_path, opts_dict):
 
     xtrain, xvalid, ytrain, yvalid = train_test_split(imagePaths, maskPaths, test_size=0.2, random_state=42)
 
-    trainset = SegmentationDataset(xtrain, ytrain, classes, width, height, augmentation=get_training_augmentation(), preprocessing=get_preprocessing(norm))
-    validset = SegmentationDataset(xvalid, yvalid, classes, width, height, preprocessing=get_preprocessing(norm))
+    trainset = SegmentationDataset(xtrain, ytrain, classes, width, height, augmentation=get_training_augmentation(), preprocessing=get_preprocessing())
+    validset = SegmentationDataset(xvalid, yvalid, classes, width, height, preprocessing=get_preprocessing())
 
     print(f'\ntrainset: {len(trainset)}\nvalidset: {len(validset)}\n')
     return trainset, validset
