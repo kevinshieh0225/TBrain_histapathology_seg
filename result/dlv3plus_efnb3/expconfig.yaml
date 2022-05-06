@@ -1,15 +1,13 @@
-aug.resize_height: 720
-aug.resize_width: 720
-iscrop: True
+aug.resize_height: 576
 batchsize: 8
 classes:
 - stas
 epochs: 120
 loss.type: DiceLoss
 model.activation: sigmoid
-model.encoder_name: efficientnet-b4
+model.encoder_name: efficientnet-b3
 model.encoder_weights: imagenet
-model.type: Unet
+model.type: DeepLabV3Plus
 optim.lr: 0.0003
 optim.type: Adam
 sched.T_0: 4

@@ -38,7 +38,7 @@ def load_wdb_config(
 
     return opts_dict
 
-def load_dataset_root(cfgpath = './cfg/dataset.yaml'):
+def load_setting(cfgpath = './cfg/setting.yaml'):
     with open(cfgpath, 'r') as fp:
         ds_dict = yaml.load(fp, Loader=yaml.FullLoader)
     ds_dict['dataset_root'] = os.path.join(ds_dict['root'], ds_dict['dataset_root'])
@@ -47,11 +47,6 @@ def load_dataset_root(cfgpath = './cfg/dataset.yaml'):
 
     return ds_dict
 
-def load_project_name(cfgpath = './cfg/name.yaml'):
-    with open(cfgpath, 'r') as fp:
-        pjname_dict = yaml.load(fp, Loader=yaml.FullLoader)
-    
-    return pjname_dict['project'], pjname_dict['name']
 
 def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
     expname = searchnewname(name)

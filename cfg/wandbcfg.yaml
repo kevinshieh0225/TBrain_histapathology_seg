@@ -1,28 +1,29 @@
 # https://smp.readthedocs.io/
 aug.resize_height:
-  value: 800
-aug.resize_width:
-  value: 800
+  value: 576
+iscrop:
+  value: 0
 batchsize:
   value: 8
 accumulate_grad_batches:
-  value: 2        # default: None
+  value: 1        # default: 1
 classes:
   value: ['stas']
 epochs:
   value: 120
-loss.type:
-  value: DiceLoss
-model.activation:
-  value: sigmoid
+
 model.encoder_name:
   value: efficientnet-b4
 model.encoder_weights:
   value: imagenet
 model.type:
-  value: Unet  #DeepLabV3Plus
+  value: Unet       # DeepLabV3Plus, Unet
+
+loss.type:
+  value: FocalTverskyLoss   
+# DiceLoss 0.0003, BCEWithLogitsLoss 0.001, FocalTverskyLoss 0.0003
 optim.lr:
-  value: 0.0003
+  value: 0.0003     # 0.001, 0.0003
 optim.type:
   value: AdamW
 sched.T_0:

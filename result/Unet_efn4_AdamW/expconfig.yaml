@@ -1,6 +1,4 @@
-aug.resize_height: 720
-aug.resize_width: 720
-iscrop: True
+aug.resize_height: 576
 batchsize: 8
 classes:
 - stas
@@ -11,7 +9,7 @@ model.encoder_name: efficientnet-b4
 model.encoder_weights: imagenet
 model.type: Unet
 optim.lr: 0.0003
-optim.type: Adam
+optim.type: AdamW
 sched.T_0: 4
 sched.T_mult: 2
 sched.type: CosineAnnealingWR

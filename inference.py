@@ -3,7 +3,7 @@ from plot import visualize
 from dataloader import get_preprocessing
 import segmentation_models_pytorch as smp
 
-from config import load_wdb_config, load_dataset_root
+from config import load_wdb_config, load_setting
 from network import Litsmp
 from tqdm import tqdm
 
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     pretrain_path = './result/dlp_efn5_apex_b32_AdamW/'
     cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
     weight = os.path.join(pretrain_path, 'epoch=184-step=9805.ckpt')
-    ds_dict = load_dataset_root()
+    ds_dict = load_setting()
 
     Public_Image = ds_dict['public_root']
     opts_dict = load_wdb_config(cfgpath)

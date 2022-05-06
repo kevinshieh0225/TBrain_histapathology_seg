@@ -1,7 +1,7 @@
 import cv2
 import os
 from tqdm import tqdm
-from config import load_dataset_root
+from config import load_setting
 
 WIDTH = 800
 HEIGHT = 1600
@@ -30,7 +30,7 @@ def trainset_crop(dataset_root, save_dataset_root):
             cv2.imwrite(os.path.join(resize_path_masks, f'{image_id}_{n}.png'), mask[:,start:end,:])
 
 if __name__ == '__main__':
-    root = load_dataset_root()['root']
+    root = load_setting()['root']
     dataset_root = os.path.join(root, 'SEG_Train_Datasets')
     save_dataset_root = os.path.join(root, 'SEG_Train_Datasets_Resize')
     trainset_crop(dataset_root, save_dataset_root)

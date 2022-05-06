@@ -7,7 +7,7 @@ import albumentations as albu
 from albumentations.augmentations.transforms import Normalize
 from albumentations.pytorch.transforms import ToTensorV2
 import segmentation_models_pytorch as smp
-from config import load_wdb_config, load_dataset_root
+from config import load_wdb_config, load_setting
 
 class SegmentationDataset(Dataset):
     """CamVid Dataset. Read images, apply augmentation and preprocessing transformations.
@@ -119,12 +119,29 @@ def get_preprocessing():
 def splitdataset(img_path, mask_path, opts_dict):
     classes = opts_dict['classes']
     height = opts_dict['aug']['resize_height']
-    width = opts_dict['aug']['resize_width']
+    width = height * 2 if opts_dict['iscrop'] == 1 else height
 
-    imagePaths = [os.path.join(img_path, image_id) for image_id in os.listdir(img_path)]
-    maskPaths = [os.path.join(mask_path, image_id).replace("jpg", "png") for image_id in os.listdir(img_path)]
 
-    xtrain, xvalid, ytrain, yvalid = train_test_split(imagePaths, maskPaths, test_size=0.2, random_state=42)
+    if(opts_dict['iscrop'] is not True):
+        imagePaths = [os.path.join(img_path, image_id) for image_id in os.listdir(img_path)]
+        maskPaths = [os.path.join(mask_path, image_id).replace("jpg", "png") for image_id in os.listdir(img_path)]
+        xtrain, xvalid, ytrain, yvalid = train_test_split(imagePaths, maskPaths, test_size=0.2, random_state=42)
+    else:
+        IDPaths , xtrain, xvalid, ytrain, yvalid = [], [], [], [], []
+        for image_id in os.listdir(img_path):
+            id = image_id.split('_')[0]
+            if id not in IDPaths:
+                IDPaths.append(id)
+        idtrain, idvalid = train_test_split(IDPaths, test_size=0.2, random_state=42)
+        for id in idtrain:
+            for n in range(3):
+                xtrain.append(os.path.join(img_path, f'{id}_{n}.png'))
+                ytrain.append(os.path.join(mask_path, f'{id}_{n}.png'))
+        for id in idvalid:
+            for n in range(3):
+                xvalid.append(os.path.join(img_path, f'{id}_{n}.png'))
+                yvalid.append(os.path.join(mask_path, f'{id}_{n}.png'))
+
 
     trainset = SegmentationDataset(xtrain, ytrain, classes, width, height, augmentation=get_training_augmentation(), preprocessing=get_preprocessing())
     validset = SegmentationDataset(xvalid, yvalid, classes, width, height, preprocessing=get_preprocessing())
@@ -142,7 +159,7 @@ def create_trainloader(img_path, mask_path, opts_dict):
 if __name__ == "__main__":
     opts_dict = load_wdb_config()
 
-    dataset_root = load_dataset_root()['dataset_root']
+    dataset_root = load_setting()['dataset_root']
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainloader, validloader = create_trainloader(

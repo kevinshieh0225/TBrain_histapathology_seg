@@ -4,14 +4,15 @@ from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from network import Litsmp
 from pytorch_lightning.strategies import DDPStrategy
 from dataloader import create_trainloader
-from config import wandb_config, load_dataset_root, load_project_name
+from config import wandb_config, load_setting
 
 def main():
-    project, name = load_project_name()
+    cfg = load_setting()
+    project, name = cfg['project'], cfg['name']
     opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
 
     # dataloader
-    dataset_root = load_dataset_root()['dataset_root']
+    dataset_root = cfg['dataset_root']
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainloader, validloader = create_trainloader(

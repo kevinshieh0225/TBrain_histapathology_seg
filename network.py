@@ -1,11 +1,26 @@
 import torch
 import pytorch_lightning as pl
 import segmentation_models_pytorch as smp
+from loss import TverskyLoss, FocalTverskyLoss
 
 class Litsmp(pl.LightningModule):
     def __init__(self, opts_dict):
         super().__init__()
         self.opts_dict = opts_dict.copy()
+        
+        # loss initial
+        loss_type = self.opts_dict['loss'].pop('type')
+        if loss_type == 'DiceLoss':
+            self.loss = smp.utils.losses.DiceLoss()
+            self.opts_dict['model']['activation'] = 'sigmoid'
+        elif loss_type == 'CrossEntropyLoss':
+            self.loss = smp.utils.losses.CrossEntropyLoss()
+        elif loss_type == 'BCEWithLogitsLoss':
+            self.loss = smp.utils.losses.BCEWithLogitsLoss()
+        elif loss_type == 'TverskyLoss':
+            self.loss = TverskyLoss()
+        elif loss_type == 'FocalTverskyLoss':
+            self.loss = FocalTverskyLoss()
 
         # model initial
         model_type = self.opts_dict['model'].pop('type')
@@ -17,12 +32,6 @@ class Litsmp(pl.LightningModule):
             self.model = smp.Unet(
                     **self.opts_dict['model']
                 )
-        
-        # loss initial
-        loss_type = self.opts_dict['loss'].pop('type')
-        if loss_type == 'DiceLoss':
-            self.loss = smp.utils.losses.DiceLoss()
-        
 
         self.metrics = [
             smp.utils.metrics.Fscore(),

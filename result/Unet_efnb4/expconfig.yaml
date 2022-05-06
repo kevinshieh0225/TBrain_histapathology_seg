@@ -1,6 +1,4 @@
-aug.resize_height: 720
-aug.resize_width: 720
-iscrop: True
+aug.resize_height: 576
 batchsize: 8
 classes:
 - stas
