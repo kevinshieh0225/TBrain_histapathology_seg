@@ -44,7 +44,7 @@ def load_setting(cfgpath = './cfg/setting.yaml'):
     ds_dict['dataset_root'] = os.path.join(ds_dict['root'], ds_dict['dataset_root'])
     ds_dict['public_root'] = os.path.join(ds_dict['root'], ds_dict['public_root'])
     ds_dict['inference_root'] = os.path.join(ds_dict['root'], ds_dict['inference_root'])
-
+    ds_dict['cropped_public_root'] = os.path.join(ds_dict['root'], ds_dict['cropped_public_root'])
     return ds_dict
 
 

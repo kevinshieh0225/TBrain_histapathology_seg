@@ -10,7 +10,7 @@ accumulate_grad_batches:
 classes:
   value: ['stas']
 epochs:
-  value: 120
+  value: 2
 
 model.encoder_name:
   value: efficientnet-b4
