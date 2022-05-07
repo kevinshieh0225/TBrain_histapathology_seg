@@ -4,30 +4,6 @@ import argparse
 import wandb
 from pytorch_lightning.loggers import WandbLogger
 
-
-def receive_arg():
-    """Process all hyper-parameters and experiment settings.
-    
-    Record in opts_dict."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--opt_path', type=str, default='config.yaml', 
-        help='Path to option YAML file.'
-        )
-
-    args = parser.parse_args()
-    
-    with open(args.opt_path, 'r') as fp:
-        opts_dict = yaml.load(fp, Loader=yaml.FullLoader)
-    opts_dict['model']['classes'] = len(opts_dict['classes'])
-
-    expname_base = opts_dict['expname']
-    expname = searchnewname(expname_base)
-    opts_dict['expname'] = expname
-    opts_dict['savepath'] = os.path.join('./result', expname)
-
-    return opts_dict
-
 def load_wdb_config(
         cfgpath='./result/Unet_efnb4_nonorm/expconfig.yaml',
         ):
@@ -50,7 +26,7 @@ def load_setting(cfgpath = './cfg/setting.yaml'):
 
 def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
     expname = searchnewname(name)
-    wandb_logger = WandbLogger(project=project, name=expname, config=cfg)
+    wandb_logger = WandbLogger(project=project, entity="aicup2022", name=expname, config=cfg)
     # wandb_logger.experiment (the wandb run) is only initialized on rank0,
     # but we need every proc to get the wandb sweep config, which happens on .init
     # so we have to call .init on non rank0 procs, but we disable creating a new run
@@ -72,9 +48,6 @@ def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
     opts_dict['savepath'] = os.path.join('./result', expname)
     opts_dict['model']['classes'] = len(opts_dict['classes'])
 
-    norm = norm_config('./cfg/normalize.yaml')
-    opts_dict.update(norm)
-
     return opts_dict, wandb_logger
 
 def searchnewname(expname_base):
@@ -85,10 +58,6 @@ def searchnewname(expname_base):
         expname = f'{expname_base}-{num}'
     return expname
 
-def norm_config(cfgpath):
-    with open(cfgpath, 'r') as fp:
-        norm = yaml.load(fp, Loader=yaml.FullLoader)
-    return norm
 
 def flatten_json(json):
     if type(json) == dict:
