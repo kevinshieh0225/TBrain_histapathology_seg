@@ -1,8 +1,8 @@
 project: 'TBrain_histapathology_segmentation'
-name: 'test'
+name: 'Crop_SGD_1TCosine'
 
 root: './data/'
-dataset_root: 'SEG_Train_Datasets'     
+dataset_root: 'SEG_Train_Datasets_Resize'     
 # SEG_Train_Datasets_Resize, SEG_Train_Datasets
 public_root: 'SEG_Train_Datasets/Train_Images'
 cropped_public_root: 'SEG_Train_Datasets_Resize/Train_Images'
