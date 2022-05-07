@@ -6,7 +6,7 @@ iscrop:
 batchsize:
   value: 4
 accumulate_grad_batches:
-  value: 1        # default: 1
+  value: 2        # default: 1
 classes:
   value: ['stas']
 epochs:
@@ -20,10 +20,10 @@ model.type:
   value: Unet       # DeepLabV3Plus, Unet
 
 loss.type:
-  value: DiceLoss 
+  value: DiceLoss   
 # DiceLoss 0.0003, BCEWithLogitsLoss 0.001, FocalTverskyLoss 0.0003
 optim.lr:
-  value: 0.01     # 0.001, 0.0003
+  value: 0.01     # 0.01, 0.001, 0.0003
 optim.type:
   value: SGD
 optim.momentum:

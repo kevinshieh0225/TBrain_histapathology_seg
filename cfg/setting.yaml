@@ -4,10 +4,7 @@ name: 'Crop_SGD_1TCosine'
 root: './data/'
 dataset_root: 'SEG_Train_Datasets_Resize'     
 # SEG_Train_Datasets_Resize, SEG_Train_Datasets
-public_root: 'SEG_Train_Datasets/Train_Images'
-cropped_public_root: 'SEG_Train_Datasets_Resize/Train_Images'
+public_root: 'Public_Image'
+cropped_public_root: 'Public_Image_Resize'
 #Public_Image
 inference_root: 'inference'
-
-iscrop: 1
-crop_num: 3
