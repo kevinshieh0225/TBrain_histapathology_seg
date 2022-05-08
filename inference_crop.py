@@ -27,6 +27,7 @@ if __name__ == "__main__":
     height = opts_dict['aug']['resize_height']
     width = height if opts_dict['iscrop'] else 2 * height
 
+    model = Litsmp.load_from_checkpoint(weight)
     preprocess = get_preprocessing()
     model.eval()
 
@@ -35,7 +36,6 @@ if __name__ == "__main__":
     block = int(width/4)
 
     for image_id in tqdm(imagePaths):
-        mask_array = []
         for n in range(3):
             start = block * (1 if n > 0 else 0)
             end = block * (4 - (1 if n != 2 else 0))

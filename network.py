@@ -9,7 +9,6 @@ class Litsmp(pl.LightningModule):
         self.opts_dict = copy.deepcopy(opts_dict)
         self.save_hyperparameters(opts_dict)
         # loss initial
-        print(self.hparams)
         
         loss_type = self.opts_dict['loss'].pop('type')
         if loss_type == 'DiceLoss':
