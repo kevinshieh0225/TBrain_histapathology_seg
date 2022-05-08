@@ -1,8 +1,10 @@
 import os, cv2
 from tqdm import tqdm
+import csv, json
 import numpy as np
 from config import load_setting
 from sklearn.cluster import KMeans
+from sklearn.model_selection import train_test_split
 
 def rgbw_map(img_folder):
     img_id_list = [image_id.split('.')[0] for image_id in os.listdir(img_folder)]
@@ -29,15 +31,44 @@ def rbgcluster(n_clusters, img_id_list, rbg_list):
     return rgbdstb
 
 if __name__ == "__main__":
-    root = load_setting()['root']
+    ds_cfg = load_setting()
+    root = ds_cfg['root']
     img_folder = os.path.join(root, 'SEG_Train_Datasets', 'Train_Images')
-    respath = './cfg/distrubution.csv'
+    os.makedirs('./distribute', exist_ok=True)
+    respath = './distribute/distrubution.csv'
+    list_json = ds_cfg['train_valid_list']
     img_id_list, rbg_list = rgbw_map(img_folder)
 
     rgbdstb = rbgcluster(8, img_id_list, rbg_list)
-    rgbdstb = dict(sorted(rgbdstb.items(), key=lambda item: item[1]))
+    train_id, valid_id, _, _ = train_test_split(
+                                list(rgbdstb.keys()), list(rgbdstb.values()),
+                                test_size=0.2, random_state=42,
+                                stratify=list(rgbdstb.values())
+                                )
+    train_test_list = {
+        'train': train_id,
+        'valid': valid_id,
+        }
+    with open(list_json, 'w') as f:  
+        json.dump(train_test_list, f)
 
+    # rgbdstb = dict(sorted(rgbdstb.items(), key=lambda item: item[1]))
+    
+    # group = {}
+    # for key, value in rgbdstb:
+    #     if key not in group:
+    #         group[key] = [value]
+    #     else:
+    #         group[key].append(value)
+    
+    # with open(respath, 'w') as f:  
+    #     writer = csv.writer(f)
+    #     writer.writerow(['id', 'cluster'])
+    #     for k, v in rgbdstb.items():
+    #         writer.writerow([k, v])
 
+    # with open(jsonpath, 'w') as f:  
+    #     json.dumps(group, f)
 
     # RGB normalization
     # mean: [210.92679284 158.3909311  196.35660441]

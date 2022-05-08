@@ -1,13 +1,12 @@
 from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
 import os, torch
-import cv2
+import cv2, json
 import numpy as np
 import albumentations as albu
-from albumentations.augmentations.transforms import Normalize
 from albumentations.pytorch.transforms import ToTensorV2
-import segmentation_models_pytorch as smp
-from config import load_wdb_config, load_setting
+import wandb
+from config import unflatten_json, load_setting
 
 class SegmentationDataset(Dataset):
     """CamVid Dataset. Read images, apply augmentation and preprocessing transformations.
@@ -116,13 +115,32 @@ def get_preprocessing():
     ]
     return albu.Compose(_transform)
 
-def splitdataset(img_path, mask_path, opts_dict):
+def splitdataset(img_path, mask_path, opts_dict, ds_cfg):
     classes = opts_dict['classes']
     height = opts_dict['aug']['resize_height']
     width = height * 2 if opts_dict['iscrop'] == 1 else height
 
+    if(opts_dict['readlist'] == 1):
+        train_test_list = json.load(open(ds_cfg['train_valid_list']))
+        trainlist = train_test_list['train']
+        validlist = train_test_list['valid']
+        if(opts_dict['iscrop'] == 1):
+            trainlist = [f'{image_id}_0' for image_id in trainlist] + \
+                        [f'{image_id}_1' for image_id in trainlist] + \
+                        [f'{image_id}_2' for image_id in trainlist]
+            validlist = [f'{image_id}_0' for image_id in validlist] + \
+                        [f'{image_id}_1' for image_id in validlist] + \
+                        [f'{image_id}_2' for image_id in validlist]
+            xtrain = [os.path.join(img_path, f'{image_id}.png') for image_id in trainlist]
+            xvalid = [os.path.join(img_path, f'{image_id}.png') for image_id in validlist]
+        else:
+            xtrain = [os.path.join(img_path, f'{image_id}.jpg') for image_id in trainlist]
+            xvalid = [os.path.join(img_path, f'{image_id}.jpg') for image_id in validlist]
 
-    if(opts_dict['iscrop'] is not True):
+        ytrain = [os.path.join(mask_path, f'{image_id}.png') for image_id in trainlist]
+        yvalid = [os.path.join(mask_path, f'{image_id}.png') for image_id in validlist]
+
+    elif(opts_dict['iscrop'] != 1):
         imagePaths = [os.path.join(img_path, image_id) for image_id in os.listdir(img_path)]
         maskPaths = [os.path.join(mask_path, image_id).replace("jpg", "png") for image_id in os.listdir(img_path)]
         xtrain, xvalid, ytrain, yvalid = train_test_split(imagePaths, maskPaths, test_size=0.2, random_state=42)
@@ -149,21 +167,24 @@ def splitdataset(img_path, mask_path, opts_dict):
     print(f'\ntrainset: {len(trainset)}\nvalidset: {len(validset)}\n')
     return trainset, validset
 
-def create_trainloader(img_path, mask_path, opts_dict):
+def create_trainloader(img_path, mask_path, opts_dict, ds_cfg):
     batch_size = opts_dict['batchsize']
-    trainset, validset = splitdataset(img_path, mask_path, opts_dict)
+    trainset, validset = splitdataset(img_path, mask_path, opts_dict, ds_cfg)
     trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers = 4)
     validloader = DataLoader(validset, batch_size=batch_size, shuffle=False, drop_last=True, num_workers = 4)
     return trainloader, validloader
 
 if __name__ == "__main__":
-    opts_dict = load_wdb_config()
-
-    dataset_root = load_setting()['dataset_root']
+    wandb.init(config='cfg/wandbcfg.yaml', mode="disabled")
+    opts_dict = wandb.config.as_dict()
+    unflatten_json(opts_dict)
+    ds_cfg = load_setting()
+    dataset_root = ds_cfg['crop_dataset_root'] if opts_dict['iscrop'] == 1 else ds_cfg['dataset_root']
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainloader, validloader = create_trainloader(
                                     imagePaths,
                                     maskPaths,
                                     opts_dict,
+                                    ds_cfg
                                 )

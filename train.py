@@ -12,14 +12,16 @@ def main():
     opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
 
     # dataloader
-    dataset_root = cfg['dataset_root']
+    dataset_root = cfg['crop_dataset_root'] \
+        if opts_dict['iscrop'] == 1 else cfg['dataset_root']
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainloader, validloader = create_trainloader(
                                 imagePaths,
                                 maskPaths,
                                 opts_dict,
-                            )
+                                cfg
+                                )
     # training
     modeltrain(
         trainloader=trainloader,

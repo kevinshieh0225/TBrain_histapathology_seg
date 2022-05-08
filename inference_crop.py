@@ -8,8 +8,8 @@ from network import Litsmp
 from tqdm import tqdm
 
 if __name__ == "__main__":
-    pretrain_path = './result/Unet_efn4_crop'
-    weight = os.path.join(pretrain_path, 'epoch=91-step=14536.ckpt')
+    pretrain_path = './result/base_crop_SGD_T120'
+    weight = os.path.join(pretrain_path, 'epoch=109-step=17380.ckpt')
     ds_dict = load_setting()
     checkpoint_dict = torch.load(weight)
     if 'hyper_parameters' in checkpoint_dict:
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     model.eval()
 
     imagePaths = [image_id for image_id in os.listdir(Public_Image)]
-    cropPath = ds_dict['cropped_public_root']
+    cropPath = ds_dict['crop_public_root']
     block = int(width/4)
 
     for image_id in tqdm(imagePaths):
