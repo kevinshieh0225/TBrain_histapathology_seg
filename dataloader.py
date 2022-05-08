@@ -86,9 +86,11 @@ class SegmentationDataset(Dataset):
 def get_training_augmentation():
     train_transform = [
         albu.Flip(p=0.7),
+        albu.Rotate(limit=15, interpolation=cv2.INTER_LANCZOS4, p=0.7),
         albu.ColorJitter(brightness=0.1, hue=0.1, p=0.8),
         # albu.HueSaturationValue(val_shift_limit=15, p=0.8),
         albu.Sharpen(lightness=(0.9, 1.1), p=0.5),
+        
         # albu.Affine()
     ]
     return albu.Compose(train_transform)
@@ -118,7 +120,7 @@ def get_preprocessing():
 def splitdataset(img_path, mask_path, opts_dict, ds_cfg):
     classes = opts_dict['classes']
     height = opts_dict['aug']['resize_height']
-    width = height * 2 if opts_dict['iscrop'] == 1 else height
+    width = height if opts_dict['iscrop'] else height * 2
 
     if(opts_dict['readlist'] == 1):
         train_test_list = json.load(open(ds_cfg['train_valid_list']))
@@ -161,8 +163,10 @@ def splitdataset(img_path, mask_path, opts_dict, ds_cfg):
                 yvalid.append(os.path.join(mask_path, f'{id}_{n}.png'))
 
 
-    trainset = SegmentationDataset(xtrain, ytrain, classes, width, height, augmentation=get_training_augmentation(), preprocessing=get_preprocessing())
-    validset = SegmentationDataset(xvalid, yvalid, classes, width, height, preprocessing=get_preprocessing())
+    trainset = SegmentationDataset(xtrain, ytrain, classes, width, height, \
+        augmentation=get_training_augmentation(), preprocessing=get_preprocessing())
+    validset = SegmentationDataset(xvalid, yvalid, classes, width, height, \
+        preprocessing=get_preprocessing())
 
     print(f'\ntrainset: {len(trainset)}\nvalidset: {len(validset)}\n')
     return trainset, validset
