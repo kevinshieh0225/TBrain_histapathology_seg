@@ -2,7 +2,7 @@
 aug.resize_height:
   value: 800
 iscrop:
-  value: 0
+  value: 0        # crop=1, noncrop=0
 readlist:
   value: 1
 batchsize:
@@ -25,19 +25,19 @@ loss.type:
   value: DiceLoss   
 # DiceLoss 0.0003, BCEWithLogitsLoss 0.001, FocalTverskyLoss 0.0003
 optim.lr:
-  value: 0.0003     # 0.01, 0.001, 0.0003
+  value: 0.01     # 0.01, 0.001, 0.0003
 optim.type:
-  value: Adam
-# optim.momentum:
-#   value: 0.9
-# optim.weight_decay:
-#   value: 0.0001
-# optim.nesterov:
-#   value: True
+  value: SGD       # SGD, Adam
+optim.momentum:
+  value: 0.9
+optim.weight_decay:
+  value: 0.0001
+optim.nesterov:
+  value: True
 sched.T_0:
-  value: 4
+  value: 120
 sched.T_mult:
-  value: 2
+  value: 1
 sched.type:
   value: CosineAnnealingWR
 

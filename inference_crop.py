@@ -1,7 +1,5 @@
 import os, torch, cv2
-from plot import visualize
 from dataloader import get_preprocessing
-import segmentation_models_pytorch as smp
 
 from config import load_wdb_config, load_setting
 from network import Litsmp
