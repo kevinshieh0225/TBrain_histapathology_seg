@@ -4,7 +4,7 @@ import csv, json
 import numpy as np
 from config import load_setting
 from sklearn.cluster import KMeans
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 
 def rgbw_map(img_folder):
     img_id_list = [image_id.split('.')[0] for image_id in os.listdir(img_folder)]
@@ -32,8 +32,8 @@ def rbgcluster(n_clusters, img_id_list, rbg_list):
 
 if __name__ == "__main__":
     ds_cfg = load_setting()
-    root = ds_cfg['root']
-    img_folder = os.path.join(root, 'SEG_Train_Datasets', 'Train_Images')
+    dataset_root = ds_cfg['dataset_root']
+    img_folder = os.path.join(dataset_root, 'Train_Images')
     os.makedirs('./distribute', exist_ok=True)
     respath = './distribute/distrubution.csv'
     list_json = ds_cfg['train_valid_list']

@@ -8,21 +8,21 @@ readlist:
 batchsize:
   value: 2
 accumulate_grad_batches:
-  value: 4        # default: 1
+  value: 6        # default: 1
 classes:
   value: ['stas']
 epochs:
   value: 120
 
-model.encoder_name:
-  value: efficientnet-b4
-model.encoder_weights:
-  value: imagenet
+model.encoder_name:         # timm-efficientnet-b4, efficientnet-b4
+  value: timm-efficientnet-b4
+model.encoder_weights:      # imagenet / advprop / noisy-student
+  value: advprop
 model.type:
-  value: Unet       # DeepLabV3Plus, Unet
+  value: UnetPlusPlus       # DeepLabV3Plus, Unet, UnetPlusPlus
 
 loss.type:
-  value: DiceLoss   
+  value: FocalTverskyLoss   
 # DiceLoss 0.0003, BCEWithLogitsLoss 0.001, FocalTverskyLoss 0.0003
 optim.lr:
   value: 0.01     # 0.01, 0.001, 0.0003

@@ -2,7 +2,9 @@ import torch
 import pytorch_lightning as pl
 import segmentation_models_pytorch as smp
 from loss import TverskyLoss, FocalTverskyLoss
+import ttach as tta
 import copy
+
 class Litsmp(pl.LightningModule):
     def __init__(self, opts_dict):
         super().__init__()
@@ -33,6 +35,10 @@ class Litsmp(pl.LightningModule):
             self.model = smp.Unet(
                     **self.opts_dict['model']
                 )
+        elif model_type == 'UnetPlusPlus':
+            self.model = smp.UnetPlusPlus(
+                    **self.opts_dict['model']
+                )
 
         self.metrics = [
             smp.utils.metrics.Fscore(),
@@ -61,7 +67,8 @@ class Litsmp(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
-        y_pred = self.model(x)
+        tta_model = tta.SegmentationTTAWrapper(self.model, tta.aliases.d4_transform(), merge_mode='mean')
+        y_pred = tta_model(x)
         loss = self.loss(y_pred, y)
         self.log(f"valid loss", loss, on_epoch=True, prog_bar=True)
         for metric_fn in self.metrics:

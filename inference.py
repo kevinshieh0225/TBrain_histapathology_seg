@@ -1,16 +1,14 @@
 import os, torch, cv2
-from plot import visualize
 from dataloader import get_preprocessing
-import segmentation_models_pytorch as smp
 
 from config import load_wdb_config, load_setting
 from network import Litsmp
 from tqdm import tqdm
 
 if __name__ == "__main__":
-    pretrain_path = './result/dlp_efn5_apex_b32_AdamW/'
+    pretrain_path = './result/base_noncrop_SGD_T120/'
     cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
-    weight = os.path.join(pretrain_path, 'epoch=184-step=9805.ckpt')
+    weight = os.path.join(pretrain_path, 'epoch=78-step=8295.ckpt')
     ds_dict = load_setting()
 
     Public_Image = ds_dict['public_root']
