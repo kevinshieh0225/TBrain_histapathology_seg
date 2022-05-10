@@ -68,7 +68,7 @@ def flatten_json(json):
                 for k2, v2 in v.items():
                     json[k+"."+k2] = v2
 
-                    
+
 def unflatten_json(json):
     if type(json) == dict:
         for k in sorted(json.keys(), reverse=True):

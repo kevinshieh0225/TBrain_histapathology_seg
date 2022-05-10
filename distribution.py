@@ -2,9 +2,10 @@ import os, cv2
 from tqdm import tqdm
 import csv, json
 import numpy as np
+import pandas as pd
 from config import load_setting
 from sklearn.cluster import KMeans
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, StratifiedKFold
 
 def rgbw_map(img_folder):
     img_id_list = [image_id.split('.')[0] for image_id in os.listdir(img_folder)]
@@ -36,21 +37,30 @@ if __name__ == "__main__":
     img_folder = os.path.join(dataset_root, 'Train_Images')
     os.makedirs('./distribute', exist_ok=True)
     respath = './distribute/distrubution.csv'
-    list_json = ds_cfg['train_valid_list']
-    img_id_list, rbg_list = rgbw_map(img_folder)
+    list_json = './distribute/train_valid_list'
+    rgbdstb = {}
+    if not os.path.isfile(respath):
+        img_id_list, rbg_list = rgbw_map(img_folder)
+        rgbdstb = rbgcluster(8, img_id_list, rbg_list)
+    else:
+        with open(respath, 'r') as f:
+            reader = csv.reader(f)
+            next(reader, None)
+            for row in reader:
+                rgbdstb[row[0]] = int(row[1])
 
-    rgbdstb = rbgcluster(8, img_id_list, rbg_list)
-    train_id, valid_id, _, _ = train_test_split(
-                                list(rgbdstb.keys()), list(rgbdstb.values()),
-                                test_size=0.2, random_state=42,
-                                stratify=list(rgbdstb.values())
-                                )
-    train_test_list = {
-        'train': train_id,
-        'valid': valid_id,
-        }
-    with open(list_json, 'w') as f:  
-        json.dump(train_test_list, f)
+    id_list = list(rgbdstb.keys())
+    cl_list = list(rgbdstb.values())
+    skf = StratifiedKFold(n_splits = 5, random_state = 7, shuffle = True) 
+    for idx, (train_index, val_index) in enumerate(skf.split(np.zeros(len(id_list)),cl_list)):
+        train_id = pd.DataFrame(id_list).iloc[train_index][0].tolist()
+        valid_id = pd.DataFrame(id_list).iloc[val_index][0].tolist()
+        train_test_list = {
+            'train': train_id,
+            'valid': valid_id,
+            }
+        with open(f'{list_json}_{idx}.json', 'w') as f:  
+            json.dump(train_test_list, f)
 
     # rgbdstb = dict(sorted(rgbdstb.items(), key=lambda item: item[1]))
     

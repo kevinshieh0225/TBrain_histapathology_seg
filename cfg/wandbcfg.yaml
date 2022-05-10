@@ -12,14 +12,14 @@ accumulate_grad_batches:
 classes:
   value: ['stas']
 epochs:
-  value: 120
+  value: 80
 
-model.encoder_name:         # timm-efficientnet-b4, efficientnet-b4
+model.encoder_name:         # timm-efficientnet-b4, tu-resnest50d
   value: timm-efficientnet-b4
 model.encoder_weights:      # imagenet / advprop / noisy-student
   value: advprop
-model.type:
-  value: UnetPlusPlus       # DeepLabV3Plus, Unet, UnetPlusPlus
+model.type:                 # DeepLabV3Plus, Unet, UnetPlusPlus
+  value: UnetPlusPlus
 
 loss.type:
   value: FocalTverskyLoss   
@@ -35,7 +35,7 @@ optim.weight_decay:
 optim.nesterov:
   value: True
 sched.T_0:
-  value: 120
+  value: 90
 sched.T_mult:
   value: 1
 sched.type:

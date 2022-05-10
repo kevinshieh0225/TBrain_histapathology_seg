@@ -6,9 +6,9 @@ from network import Litsmp
 from tqdm import tqdm
 
 if __name__ == "__main__":
-    pretrain_path = './result/base_noncrop_SGD_T120/'
+    pretrain_path = './result/U+_nc_moreaug_FTL/'
     cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
-    weight = os.path.join(pretrain_path, 'epoch=78-step=8295.ckpt')
+    weight = os.path.join(pretrain_path, 'epoch=75-step=5396.ckpt')
     ds_dict = load_setting()
 
     Public_Image = ds_dict['public_root']

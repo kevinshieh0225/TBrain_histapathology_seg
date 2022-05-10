@@ -7,20 +7,30 @@ from dataloader import create_trainloader
 from config import wandb_config, load_setting
 
 def main():
-    cfg = load_setting()
-    project, name = cfg['project'], cfg['name']
+    ds_cfg = load_setting()
+    project, name = ds_cfg['project'], ds_cfg['name']
+    if(ds_cfg['iscvl'] == 1):
+        fold_list_root = ds_cfg['train_valid_list'].replace('.json', '')
+        for n_fold in range(5):
+            name = ds_cfg['name'] + f'_fd{n_fold}'
+            ds_cfg['train_valid_list'] = f'{fold_list_root}_{n_fold}.json'
+            trainprocess(project, name, ds_cfg)
+    else:
+        trainprocess(project, name, ds_cfg)
+
+def trainprocess(project, name, ds_cfg):
     opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
 
     # dataloader
-    dataset_root = cfg['crop_dataset_root'] \
-        if opts_dict['iscrop'] == 1 else cfg['dataset_root']
+    dataset_root = ds_cfg['crop_dataset_root'] \
+        if opts_dict['iscrop'] == 1 else ds_cfg['dataset_root']
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainloader, validloader = create_trainloader(
                                 imagePaths,
                                 maskPaths,
                                 opts_dict,
-                                cfg
+                                ds_cfg
                                 )
     # training
     modeltrain(
@@ -29,6 +39,7 @@ def main():
         wandb_logger=wandb_logger,
         opts_dict=opts_dict,
         )
+
 
 def modeltrain(
         trainloader,

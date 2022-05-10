@@ -77,21 +77,21 @@ class SegmentationDataset(Dataset):
     def __len__(self):
         return len(self.masks_fps)
 
-#   origin
-#   albu.HorizontalFlip(p=0.5),
-#   albu.VerticalFlip(p=0.5),        
+#   origin      
 #   albu.HueSaturationValue(p=0.6),
 #   albu.Sharpen(p=0.5),
 #   albu.RandomBrightnessContrast(p=0.4),
 def get_training_augmentation():
     train_transform = [
-        albu.Flip(p=0.7),
-        albu.Rotate(limit=15, interpolation=cv2.INTER_LANCZOS4, p=0.7),
-        albu.ColorJitter(brightness=0.1, hue=0.1, p=0.8),
-        # albu.HueSaturationValue(val_shift_limit=15, p=0.8),
-        albu.Sharpen(lightness=(0.9, 1.1), p=0.5),
-        
-        # albu.Affine()
+        albu.Flip(p=0.75),
+        albu.ColorJitter(brightness=0.1, hue=0.15, p=0.8),
+        albu.ShiftScaleRotate(rotate_limit=25, p=0.8),
+        albu.ElasticTransform(p=0.4),
+        albu.OneOf([
+            albu.RandomBrightnessContrast(),
+            albu.RandomGamma(),
+        ], p=0.5),
+        albu.Sharpen(lightness=(0.9, 1.1)),
     ]
     return albu.Compose(train_transform)
 
