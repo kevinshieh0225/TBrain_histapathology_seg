@@ -26,12 +26,16 @@ def load_setting(cfgpath = './cfg/setting.yaml'):
 
 def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
     expname = searchnewname(name)
-    wandb_logger = WandbLogger(project=project, entity="aicup2022", name=expname, config=cfg)
+    wandb_logger = WandbLogger(project=project,
+                               entity="aicup2022",
+                               name=expname,
+                               config=cfg,
+                               reinit=True)
     # wandb_logger.experiment (the wandb run) is only initialized on rank0,
     # but we need every proc to get the wandb sweep config, which happens on .init
     # so we have to call .init on non rank0 procs, but we disable creating a new run
     if not isinstance(wandb_logger.experiment.config, wandb.sdk.wandb_config.Config):
-        wandb.init(config=cfg, mode="disabled")
+        wandb.init(config=cfg, mode="disabled", reinit=True)
         opts_dict = wandb.config.as_dict()
     else:
         opts_dict = wandb_logger.experiment.config.as_dict()

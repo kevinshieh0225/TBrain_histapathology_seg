@@ -1,14 +1,16 @@
 import os, torch, cv2
 from dataloader import get_preprocessing
-
+import numpy as np
 from config import load_wdb_config, load_setting
 from network import Litsmp
 from tqdm import tqdm
 
+THRESHOLD = 0.75
+
 if __name__ == "__main__":
-    pretrain_path = './result/U+_nc_moreaug_FTL/'
+    pretrain_path = './result/U+_nc_moreaug_FTL_fd0/'
     cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
-    weight = os.path.join(pretrain_path, 'epoch=75-step=5396.ckpt')
+    weight = os.path.join(pretrain_path, 'epoch=68-step=4899.ckpt')
     ds_dict = load_setting()
 
     Public_Image = ds_dict['public_root']
@@ -32,9 +34,8 @@ if __name__ == "__main__":
         image = preprocess(image=image)['image']
         image = image.unsqueeze(0)
         with torch.no_grad():
-            mask = model(image).squeeze().cpu().numpy().round()
+            mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
         mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
-        mask *= 255
-        mask = mask.astype(int)
+        mask = np.where(mask > THRESHOLD, 1, 0) * 255
         image_id = image_id.replace('jpg', 'png')
         cv2.imwrite(os.path.join(Public_save_path, image_id), mask)

@@ -5,6 +5,7 @@ from network import Litsmp
 from pytorch_lightning.strategies import DDPStrategy
 from dataloader import create_trainloader
 from config import wandb_config, load_setting
+import wandb
 
 def main():
     ds_cfg = load_setting()
@@ -14,7 +15,9 @@ def main():
         for n_fold in range(5):
             name = ds_cfg['name'] + f'_fd{n_fold}'
             ds_cfg['train_valid_list'] = f'{fold_list_root}_{n_fold}.json'
+            print(f'\nStart fold {n_fold} experiment\n')
             trainprocess(project, name, ds_cfg)
+            wandb.finish()
     else:
         trainprocess(project, name, ds_cfg)
 

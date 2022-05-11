@@ -109,9 +109,6 @@ def get_preprocessing():
         return x.to(torch.float32) / 255.0
 
     _transform = [
-        # Normalize(**norm),
-        # Normalize(),
-        # albu.CLAHE(always_apply=True),
         ToTensorV2(transpose_mask=True),
         albu.Lambda(image=norm_scale),
     ]
