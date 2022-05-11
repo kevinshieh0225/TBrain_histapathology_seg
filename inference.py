@@ -1,41 +1,83 @@
 import os, torch, cv2
-from utils.dataloader import get_preprocessing
 import numpy as np
+from tqdm import tqdm
+from utils.dataloader import get_preprocessing
 from utils.config import load_wdb_config, load_setting
 from utils.network import Litsmp
-from tqdm import tqdm
 
 THRESHOLD = 0.75
 
+def modelsetting(pretrain_path):
+    for pth in os.listdir(pretrain_path):
+        if pth.find('.ckpt'):
+            weight = os.path.join(pretrain_path, pth)
+            break
+    checkpoint_dict = torch.load(weight)
+    if 'hyper_parameters' in checkpoint_dict:
+        opts_dict = checkpoint_dict['hyper_parameters']
+        model = Litsmp.load_from_checkpoint(weight)
+    else:
+        cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
+        opts_dict = load_wdb_config(cfgpath)
+        model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
+    
+    return opts_dict, model
+
 if __name__ == "__main__":
     pretrain_path = './result/U+_nc_moreaug_FTL_fd0/'
-    cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
-    weight = os.path.join(pretrain_path, 'epoch=68-step=4899.ckpt')
-    ds_dict = load_setting()
 
+    opts_dict, model = modelsetting(pretrain_path)
+    model.eval()
+
+    ds_dict = load_setting()
     Public_Image = ds_dict['public_root']
-    opts_dict = load_wdb_config(cfgpath)
     Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname'])
     os.makedirs(Public_save_path, exist_ok=True)
 
-    preprocess = get_preprocessing()
-
-    model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
-    model.eval()
     height = opts_dict['aug']['resize_height']
-    width = height * 2
-    imagePaths = [image_id for image_id in os.listdir(Public_Image)]
-    for image_id in tqdm(imagePaths):
-        image = cv2.imread(os.path.join(Public_Image, image_id))
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        origin_h, origin_w, _ = image.shape
-        if image.shape != (height, width, 3):
-            image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
-        image = preprocess(image=image)['image']
-        image = image.unsqueeze(0)
-        with torch.no_grad():
-            mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
-        mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
-        mask = np.where(mask > THRESHOLD, 1, 0) * 255
-        image_id = image_id.replace('jpg', 'png')
-        cv2.imwrite(os.path.join(Public_save_path, image_id), mask)
+    width = height if opts_dict['iscrop'] else 2 * height
+    preprocess = get_preprocessing()
+    
+    if opts_dict['iscrop'] == 0:
+        for image_id in tqdm(os.listdir(Public_Image)):
+            image = cv2.imread(os.path.join(Public_Image, image_id))
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            origin_h, origin_w, _ = image.shape
+            if image.shape != (height, width, 3):
+                image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
+            image = preprocess(image=image)['image']
+            image = image.unsqueeze(0)
+            with torch.no_grad():
+                mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
+            mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
+            mask = np.where(mask > THRESHOLD, 1, 0) * 255
+            image_id = image_id.replace('jpg', 'png')
+            cv2.imwrite(os.path.join(Public_save_path, image_id), mask)
+    else:
+        cropPath = ds_dict['crop_public_root']
+        block = int(width/4)
+        for image_id in tqdm(os.listdir(Public_Image)):
+            for n in range(3):
+                start = block * (1 if n > 0 else 0)
+                end = block * (4 - (1 if n != 2 else 0))
+                # print(start,end)
+                imgPath = image_id.split('.')[0]
+                image = cv2.imread(os.path.join(cropPath, f'{imgPath}_{n}.png'))
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                origin_image = cv2.imread(os.path.join(Public_Image, image_id))
+                origin_h, origin_w, _ = origin_image.shape
+                if image.shape != (height, width, 3):
+                    image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
+                image = preprocess(image=image)['image']
+                image = image.unsqueeze(0)
+                with torch.no_grad():
+                    mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
+                if n == 0:
+                    cat_mask = mask[:,start:end]
+                else:
+                    cat_mask = cv2.hconcat([cat_mask, mask[:,start:end]])
+
+            mask = cv2.resize(cat_mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
+            mask = np.where(mask > THRESHOLD, 1, 0) * 255
+            image_id = image_id.replace('jpg', 'png')
+            cv2.imwrite(os.path.join(Public_save_path, image_id), mask)
