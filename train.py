@@ -16,6 +16,8 @@ seed_everything(seed)
 def main():
     ds_cfg = load_setting()
     project, name = ds_cfg['project'], ds_cfg['name']
+    if ds_cfg['dev']==1:
+        project = project+'_dev'
     if(ds_cfg['iscvl'] == 1):
         fold_list_root = ds_cfg['train_valid_list'].replace('.json', '')
         for n_fold in range(5):

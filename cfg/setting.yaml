@@ -1,16 +1,19 @@
 project: 'TBrain_histapathology_segmentation'
 name: 'U+_nc_moreaug_FTL'
 
-root: '/work/u7085556/TBrain_histapathology_seg'
+root: 'data' #'data'
 dataset_root: 'SEG_Train_Datasets'
 crop_dataset_root: 'SEG_Train_Datasets_Resize'     
 # SEG_Train_Datasets_Resize, SEG_Train_Datasets
 
 train_valid_list: './distribute/train_valid_list.json'
-iscvl: 1
+iscvl: 0
 # not cross validation: 0, 5-fold: 1
 
 #Public_Image
 public_root: 'Public_Image'
 crop_public_root: 'Public_Image_Resize'
 inference_root: 'inference'
+
+# development 
+dev: 1
