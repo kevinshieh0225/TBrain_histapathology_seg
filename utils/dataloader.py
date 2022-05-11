@@ -76,18 +76,26 @@ class SegmentationDataset(Dataset):
         return len(self.masks_fps)
 
 def get_training_augmentation():
-    train_transform = [
+    return albu.Compose([
         albu.Flip(p=0.75),
-        albu.ColorJitter(brightness=0.1, hue=0.15, p=0.8),
-        albu.ShiftScaleRotate(rotate_limit=25, p=0.8),
-        albu.ElasticTransform(p=0.4),
+        albu.ColorJitter(brightness=0.1, hue=0.1, p=0.7),
+        albu.ShiftScaleRotate(rotate_limit=20, p=0.7),
+
+        albu.OneOf([
+            albu.ElasticTransform(),
+            albu.OpticalDistortion(),
+        ], p=0.7),
+
         albu.OneOf([
             albu.RandomBrightnessContrast(),
             albu.RandomGamma(),
-        ], p=0.5),
-        albu.Sharpen(lightness=(0.9, 1.1)),
-    ]
-    return albu.Compose(train_transform)
+        ], p=0.7),
+
+        albu.OneOf([
+            albu.MedianBlur(blur_limit=(3, 5)),
+            albu.GaussianBlur(blur_limit=(3, 7)),
+        ], p=0.4),
+    ])
 
 def get_preprocessing():
     """Construct preprocessing transform

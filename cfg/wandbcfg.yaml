@@ -1,27 +1,28 @@
 # https://smp.readthedocs.io/
 aug.resize_height:
   value: 800
-iscrop:           # crop=1, noncrop=0
+iscrop:                     # crop=1, noncrop=0
   value: 0
 batchsize:
-  value: 2
-accumulate_grad_batches:
-  value: 6        # default: 1
+  value: 4
+accumulate_grad_batches:    # default: 1
+  value: 3
 classes:
   value: ['stas']
 epochs:
   value: 80
 
-model.encoder_name:         # timm-efficientnet-b4, tu-resnest50d
-  value: timm-efficientnet-b4
+model.encoder_name:         # timm-efficientnet-b4, tu-resnest50d, tf_efficientnetv2_s
+  value: tu-tf_efficientnetv2_s
 model.encoder_weights:      # imagenet / advprop / noisy-student
-  value: advprop
-model.type:                 # DeepLabV3Plus, Unet, UnetPlusPlus
-  value: UnetPlusPlus
+  value: imagenet
+model.type:                 # DeepLabV3Plus, UnetPlusPlus
+  value: DeepLabV3Plus
 
 loss.type:
   value: FocalTverskyLoss   
 # DiceLoss 0.0003, BCEWithLogitsLoss 0.001, FocalTverskyLoss 0.0003
+
 optim.lr:
   value: 0.01     # 0.01, 0.001, 0.0003
 optim.type:
@@ -32,10 +33,13 @@ optim.weight_decay:
   value: 0.0001
 optim.nesterov:
   value: True
+
 sched.T_0:
-  value: 90
+  value: 80
 sched.T_mult:
   value: 1
+sched.eta_min:
+  value: 0.0005
 sched.type:
   value: CosineAnnealingWR
 
