@@ -2,9 +2,16 @@ import os, wandb
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.strategies import DDPStrategy
+from pytorch_lightning import seed_everything
+
 from utils.network import Litsmp
 from utils.dataloader import create_trainloader
 from utils.config import wandb_config, load_setting
+
+# Set seed
+seed = 42
+seed_everything(seed)
+
 
 def main():
     ds_cfg = load_setting()
