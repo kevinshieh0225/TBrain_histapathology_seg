@@ -3,9 +3,9 @@ from tqdm import tqdm
 import csv, json
 import numpy as np
 import pandas as pd
-from config import load_setting
+from utils.config import load_setting
 from sklearn.cluster import KMeans
-from sklearn.model_selection import train_test_split, StratifiedKFold
+from sklearn.model_selection import StratifiedKFold
 
 def rgbw_map(img_folder):
     img_id_list = [image_id.split('.')[0] for image_id in os.listdir(img_folder)]

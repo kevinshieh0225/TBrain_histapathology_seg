@@ -5,8 +5,6 @@ import cv2, json
 import numpy as np
 import albumentations as albu
 from albumentations.pytorch.transforms import ToTensorV2
-import wandb
-from config import unflatten_json, load_setting
 
 class SegmentationDataset(Dataset):
     """CamVid Dataset. Read images, apply augmentation and preprocessing transformations.
@@ -77,10 +75,6 @@ class SegmentationDataset(Dataset):
     def __len__(self):
         return len(self.masks_fps)
 
-#   origin      
-#   albu.HueSaturationValue(p=0.6),
-#   albu.Sharpen(p=0.5),
-#   albu.RandomBrightnessContrast(p=0.4),
 def get_training_augmentation():
     train_transform = [
         albu.Flip(p=0.75),
@@ -176,17 +170,3 @@ def create_trainloader(img_path, mask_path, opts_dict, ds_cfg):
     validloader = DataLoader(validset, batch_size=batch_size, shuffle=False, drop_last=True, num_workers = 4)
     return trainloader, validloader
 
-if __name__ == "__main__":
-    wandb.init(config='cfg/wandbcfg.yaml', mode="disabled")
-    opts_dict = wandb.config.as_dict()
-    unflatten_json(opts_dict)
-    ds_cfg = load_setting()
-    dataset_root = ds_cfg['crop_dataset_root'] if opts_dict['iscrop'] == 1 else ds_cfg['dataset_root']
-    imagePaths = os.path.join(dataset_root, 'Train_Images')
-    maskPaths = os.path.join(dataset_root, 'Train_Masks')
-    trainloader, validloader = create_trainloader(
-                                    imagePaths,
-                                    maskPaths,
-                                    opts_dict,
-                                    ds_cfg
-                                )

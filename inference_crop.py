@@ -1,8 +1,7 @@
 import os, torch, cv2
-from dataloader import get_preprocessing
-
-from config import load_wdb_config, load_setting
-from network import Litsmp
+from utils.dataloader import get_preprocessing
+from utils.config import load_wdb_config, load_setting
+from utils.network import Litsmp
 from tqdm import tqdm
 
 if __name__ == "__main__":

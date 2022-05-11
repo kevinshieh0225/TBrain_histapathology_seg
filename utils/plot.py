@@ -1,7 +1,4 @@
 import matplotlib.pyplot as plt
-import os
-from dataloader import splitdataset
-from config import load_wdb_config, load_setting
 
 def plot(name, savedir, trainhistory, validhistory):
     plt.figure(figsize=(10,5))
@@ -22,19 +19,3 @@ def visualize(**images):
         plt.title(' '.join(name.split('_')).title())
         plt.imshow(image)
     plt.show()
-
-
-
-
-if __name__ == "__main__":
-    opts_dict = load_wdb_config()
-    dataset_root = load_setting()['dataset_root']
-    imagePaths = os.path.join(dataset_root, 'Train_Images')
-    maskPaths = os.path.join(dataset_root, 'Train_Masks')
-    trainset, validset = splitdataset(imagePaths, maskPaths, opts_dict)
-    image, mask = validset[4] # get some sample
-    image = image.numpy().transpose(1, 2, 0)
-    visualize(
-        image=image, 
-        stas_mask=mask.squeeze(),
-    )

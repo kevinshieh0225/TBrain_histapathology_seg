@@ -1,11 +1,10 @@
-import os
+import os, wandb
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
-from network import Litsmp
 from pytorch_lightning.strategies import DDPStrategy
-from dataloader import create_trainloader
-from config import wandb_config, load_setting
-import wandb
+from utils.network import Litsmp
+from utils.dataloader import create_trainloader
+from utils.config import wandb_config, load_setting
 
 def main():
     ds_cfg = load_setting()

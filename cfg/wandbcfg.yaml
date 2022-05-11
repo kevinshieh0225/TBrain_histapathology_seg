@@ -3,8 +3,6 @@ aug.resize_height:
   value: 800
 iscrop:
   value: 0        # crop=1, noncrop=0
-readlist:
-  value: 1
 batchsize:
   value: 2
 accumulate_grad_batches:

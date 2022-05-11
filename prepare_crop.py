@@ -1,7 +1,7 @@
 import cv2
 import os
 from tqdm import tqdm
-from config import load_setting
+from utils.config import load_setting
 
 WIDTH = 800
 HEIGHT = 1600

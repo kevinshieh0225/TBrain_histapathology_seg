@@ -1,7 +1,7 @@
 import torch
 import pytorch_lightning as pl
 import segmentation_models_pytorch as smp
-from loss import TverskyLoss, FocalTverskyLoss
+from utils.loss import TverskyLoss, FocalTverskyLoss
 import ttach as tta
 import copy
 
