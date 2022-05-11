@@ -1,9 +1,9 @@
-import os
-import json
+import os, json, cv2
 import numpy as np
-import cv2
+from utils.config import load_setting
 
-dataset_root = './SEG_Train_Datasets'
+ds_cfg = load_setting()
+dataset_root = ds_cfg['dataset_root']
 anno_path = os.path.join(dataset_root, 'Train_Annotations')
 
 mask_path = os.path.join(dataset_root, 'Train_Masks')

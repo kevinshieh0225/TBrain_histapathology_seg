@@ -114,46 +114,25 @@ def splitdataset(img_path, mask_path, opts_dict, ds_cfg):
     width = height if opts_dict['iscrop'] else height * 2
     opts_dict['aug']['resize_width'] = width
 
-    if(opts_dict['readlist'] == 1):
-        train_test_list = json.load(open(ds_cfg['train_valid_list']))
-        trainlist = train_test_list['train']
-        validlist = train_test_list['valid']
-        if(opts_dict['iscrop'] == 1):
-            trainlist = [f'{image_id}_0' for image_id in trainlist] + \
-                        [f'{image_id}_1' for image_id in trainlist] + \
-                        [f'{image_id}_2' for image_id in trainlist]
-            validlist = [f'{image_id}_0' for image_id in validlist] + \
-                        [f'{image_id}_1' for image_id in validlist] + \
-                        [f'{image_id}_2' for image_id in validlist]
-            xtrain = [os.path.join(img_path, f'{image_id}.png') for image_id in trainlist]
-            xvalid = [os.path.join(img_path, f'{image_id}.png') for image_id in validlist]
-        else:
-            xtrain = [os.path.join(img_path, f'{image_id}.jpg') for image_id in trainlist]
-            xvalid = [os.path.join(img_path, f'{image_id}.jpg') for image_id in validlist]
+    train_test_list = json.load(open(ds_cfg['train_valid_list']))
+    trainlist = train_test_list['train']
+    validlist = train_test_list['valid']
 
-        ytrain = [os.path.join(mask_path, f'{image_id}.png') for image_id in trainlist]
-        yvalid = [os.path.join(mask_path, f'{image_id}.png') for image_id in validlist]
-
-    elif(opts_dict['iscrop'] != 1):
-        imagePaths = [os.path.join(img_path, image_id) for image_id in os.listdir(img_path)]
-        maskPaths = [os.path.join(mask_path, image_id).replace("jpg", "png") for image_id in os.listdir(img_path)]
-        xtrain, xvalid, ytrain, yvalid = train_test_split(imagePaths, maskPaths, test_size=0.2, random_state=42)
+    if(opts_dict['iscrop'] == 1):
+        trainlist = [f'{image_id}_0' for image_id in trainlist] + \
+                    [f'{image_id}_1' for image_id in trainlist] + \
+                    [f'{image_id}_2' for image_id in trainlist]
+        validlist = [f'{image_id}_0' for image_id in validlist] + \
+                    [f'{image_id}_1' for image_id in validlist] + \
+                    [f'{image_id}_2' for image_id in validlist]
+        xtrain = [os.path.join(img_path, f'{image_id}.png') for image_id in trainlist]
+        xvalid = [os.path.join(img_path, f'{image_id}.png') for image_id in validlist]
     else:
-        IDPaths , xtrain, xvalid, ytrain, yvalid = [], [], [], [], []
-        for image_id in os.listdir(img_path):
-            id = image_id.split('_')[0]
-            if id not in IDPaths:
-                IDPaths.append(id)
-        idtrain, idvalid = train_test_split(IDPaths, test_size=0.2, random_state=42)
-        for id in idtrain:
-            for n in range(3):
-                xtrain.append(os.path.join(img_path, f'{id}_{n}.png'))
-                ytrain.append(os.path.join(mask_path, f'{id}_{n}.png'))
-        for id in idvalid:
-            for n in range(3):
-                xvalid.append(os.path.join(img_path, f'{id}_{n}.png'))
-                yvalid.append(os.path.join(mask_path, f'{id}_{n}.png'))
+        xtrain = [os.path.join(img_path, f'{image_id}.jpg') for image_id in trainlist]
+        xvalid = [os.path.join(img_path, f'{image_id}.jpg') for image_id in validlist]
 
+    ytrain = [os.path.join(mask_path, f'{image_id}.png') for image_id in trainlist]
+    yvalid = [os.path.join(mask_path, f'{image_id}.png') for image_id in validlist]
 
     trainset = SegmentationDataset(xtrain, ytrain, classes, width, height, \
         augmentation=get_training_augmentation(), preprocessing=get_preprocessing())

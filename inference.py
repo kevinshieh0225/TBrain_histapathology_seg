@@ -53,14 +53,14 @@ if __name__ == "__main__":
             mask = np.where(mask > THRESHOLD, 1, 0) * 255
             image_id = image_id.replace('jpg', 'png')
             cv2.imwrite(os.path.join(Public_save_path, image_id), mask)
-    else:
+
+    elif opts_dict['iscrop'] == 1:
         cropPath = ds_dict['crop_public_root']
         block = int(width/4)
         for image_id in tqdm(os.listdir(Public_Image)):
             for n in range(3):
                 start = block * (1 if n > 0 else 0)
                 end = block * (4 - (1 if n != 2 else 0))
-                # print(start,end)
                 imgPath = image_id.split('.')[0]
                 image = cv2.imread(os.path.join(cropPath, f'{imgPath}_{n}.png'))
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
