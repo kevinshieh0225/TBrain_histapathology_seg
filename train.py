@@ -19,7 +19,7 @@ def main():
     if ds_cfg['dev']==1:
         project = project+'_dev'
     if(ds_cfg['iscvl'] == 1):
-        fold_list_root = ds_cfg['train_valid_list'].replace('.json', '')
+        fold_list_root = ds_cfg['train_valid_list'].replace('_0.json', '')
         for n_fold in range(5):
             name = ds_cfg['name'] + f'_fd{n_fold}'
             ds_cfg['train_valid_list'] = f'{fold_list_root}_{n_fold}.json'
