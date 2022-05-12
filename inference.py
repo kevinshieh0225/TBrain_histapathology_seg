@@ -9,7 +9,7 @@ THRESHOLD = 0.75
 
 def modelsetting(pretrain_path):
     for pth in os.listdir(pretrain_path):
-        if pth.find('.ckpt'):
+        if pth.find('.ckpt') != -1:
             weight = os.path.join(pretrain_path, pth)
             break
     checkpoint_dict = torch.load(weight)
@@ -24,7 +24,7 @@ def modelsetting(pretrain_path):
     return opts_dict, model
 
 if __name__ == "__main__":
-    pretrain_path = './result/U+_nc_moreaug_FTL_fd0/'
+    pretrain_path = './result/U+_nc_efb4_noisy_fd0/'
 
     opts_dict, model = modelsetting(pretrain_path)
     model.eval()

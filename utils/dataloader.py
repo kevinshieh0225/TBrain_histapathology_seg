@@ -78,22 +78,23 @@ class SegmentationDataset(Dataset):
 def get_training_augmentation():
     return albu.Compose([
         albu.Flip(p=0.75),
-        albu.ColorJitter(brightness=0.1, hue=0.1, p=0.7),
-        albu.ShiftScaleRotate(rotate_limit=20, p=0.7),
+        albu.ColorJitter(brightness=0.1, hue=0.15, p=0.7),
+        albu.ShiftScaleRotate(scale_limit=0.1, shift_limit=0.06 ,rotate_limit=20, p=0.7),
 
         albu.OneOf([
             albu.ElasticTransform(),
             albu.OpticalDistortion(),
-        ], p=0.7),
+        ], p=0.6),
 
         albu.OneOf([
             albu.RandomBrightnessContrast(),
             albu.RandomGamma(),
-        ], p=0.7),
+        ], p=0.5),
 
         albu.OneOf([
-            albu.MedianBlur(blur_limit=(3, 5)),
-            albu.GaussianBlur(blur_limit=(3, 7)),
+            albu.Sharpen(lightness=(0.7, 1.3)),
+            albu.MedianBlur(blur_limit=(3)),
+            albu.GaussianBlur(blur_limit=(3)),
         ], p=0.4),
     ])
 

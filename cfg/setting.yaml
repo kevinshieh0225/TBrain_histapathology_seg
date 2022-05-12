@@ -1,5 +1,5 @@
 project: 'TBrain_histapathology_segmentation'
-name: 'dl+_nc_resns_fd0'
+name: 'dl+_nc_tfefv2'
 
 # data, /work/u7085556/TBrain_histapathology_seg
 root: '/work/u7085556/TBrain_histapathology_seg'

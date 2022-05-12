@@ -16,17 +16,18 @@ seed_everything(seed)
 def main():
     ds_cfg = load_setting()
     project, name = ds_cfg['project'], ds_cfg['name']
-    if ds_cfg['dev']==1:
-        project = project+'_dev'
+    if ds_cfg['dev'] == 1:
+        project = project + '_dev'
     if(ds_cfg['iscvl'] == 1):
         fold_list_root = ds_cfg['train_valid_list'].replace('_0.json', '')
-        for n_fold in range(5):
+        for n_fold in range(2, 5):
             name = ds_cfg['name'] + f'_fd{n_fold}'
             ds_cfg['train_valid_list'] = f'{fold_list_root}_{n_fold}.json'
             print(f'\nStart fold {n_fold} experiment\n')
             trainprocess(project, name, ds_cfg)
             wandb.finish()
     else:
+        name = ds_cfg['name'] + '_fd0'
         trainprocess(project, name, ds_cfg)
 
 def trainprocess(project, name, ds_cfg):

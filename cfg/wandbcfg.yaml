@@ -4,24 +4,31 @@ aug.resize_height:
 iscrop:                     # crop=1, noncrop=0
   value: 0
 batchsize:
-  value: 4
+  value: 2
 accumulate_grad_batches:    # default: 1
-  value: 3
+  value: 6
 classes:
   value: ['stas']
 epochs:
   value: 80
 
-model.encoder_name:         # timm-efficientnet-b4, tu-resnest50d, tf_efficientnetv2_s
-  value: tu-tf_efficientnetv2_s
+# timm-efficientnet-b4, tf_efficientnetv2_s_in21ft1k, tu-tf_efficientnet_b4_ap, tu-tf_efficientnet_b4_ap
+model.encoder_name:
+  value: timm-efficientnet-b4
 model.encoder_weights:      # imagenet / advprop / noisy-student
   value: imagenet
 model.type:                 # DeepLabV3Plus, UnetPlusPlus
-  value: DeepLabV3Plus
+  value: UnetPlusPlus
 
 loss.type:
-  value: FocalTverskyLoss   
-# DiceLoss 0.0003, BCEWithLogitsLoss 0.001, FocalTverskyLoss 0.0003
+  value: BCEFocalTverskyLoss   
+# BCEFocalTverskyLoss
+loss.BCEratio:
+  value: 3
+loss.alpha:
+  value: 0.5
+loss.gamma:
+  value: 1
 
 optim.lr:
   value: 0.01     # 0.01, 0.001, 0.0003

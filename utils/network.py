@@ -1,7 +1,7 @@
 import torch
 import pytorch_lightning as pl
 import segmentation_models_pytorch as smp
-from utils.loss import TverskyLoss, FocalTverskyLoss
+from utils.loss import TverskyLoss, FocalTverskyLoss, BCEFocalTverskyLoss
 import ttach as tta
 import copy
 
@@ -21,9 +21,11 @@ class Litsmp(pl.LightningModule):
         elif loss_type == 'BCEWithLogitsLoss':
             self.loss = smp.utils.losses.BCEWithLogitsLoss()
         elif loss_type == 'TverskyLoss':
-            self.loss = TverskyLoss()
+            self.loss = TverskyLoss(**self.opts_dict['loss'])
         elif loss_type == 'FocalTverskyLoss':
-            self.loss = FocalTverskyLoss()
+            self.loss = FocalTverskyLoss(**self.opts_dict['loss'])
+        elif loss_type == 'BCEFocalTverskyLoss':
+            self.loss = BCEFocalTverskyLoss(**self.opts_dict['loss'])
 
         # model initial
         model_type = self.opts_dict['model'].pop('type')
@@ -89,6 +91,11 @@ class Litsmp(pl.LightningModule):
         sched_type = self.opts_dict['sched'].pop('type')
         if sched_type == 'CosineAnnealingWR':
             scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+                            optimizer,
+                            **self.opts_dict['sched']
+                        )
+        elif sched_type == 'ReduceLROnPlateau':
+            scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
                             optimizer,
                             **self.opts_dict['sched']
                         )
