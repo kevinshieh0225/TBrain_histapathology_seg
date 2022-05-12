@@ -133,7 +133,7 @@ class FocalTverskyLoss(nn.Module):
 
 class BCEFocalTverskyLoss(nn.Module):
     def __init__(self, BCEratio=3, alpha=0.5, gamma=1):
-        super(FocalTverskyLoss, self).__init__()
+        super(BCEFocalTverskyLoss, self).__init__()
         self.BCEratio = BCEratio
         self.alpha = alpha
         self.beta = 1 - alpha

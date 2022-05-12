@@ -83,19 +83,17 @@ def get_training_augmentation():
 
         albu.OneOf([
             albu.ElasticTransform(),
-            albu.OpticalDistortion(),
         ], p=0.6),
 
         albu.OneOf([
             albu.RandomBrightnessContrast(),
             albu.RandomGamma(),
-        ], p=0.5),
+        ], p=0.65),
 
         albu.OneOf([
-            albu.Sharpen(lightness=(0.7, 1.3)),
-            albu.MedianBlur(blur_limit=(3)),
             albu.GaussianBlur(blur_limit=(3)),
-        ], p=0.4),
+            albu.Sharpen(lightness=(0.7, 1.3)),
+        ], p=0.5),
     ])
 
 def get_preprocessing():
