@@ -24,9 +24,9 @@ loss.type:
   value: BCEFocalTverskyLoss   
 # BCEFocalTverskyLoss
 loss.BCEratio:
-  value: 3
+  value: 2
 loss.alpha:
-  value: 0.6
+  value: 0.54
 loss.gamma:
   value: 1
 

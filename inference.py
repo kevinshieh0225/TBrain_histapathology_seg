@@ -1,5 +1,6 @@
 import os, torch, cv2
 import numpy as np
+from scipy import ndimage
 from tqdm import tqdm
 from utils.dataloader import get_preprocessing
 from utils.config import load_wdb_config, load_setting
@@ -23,8 +24,18 @@ def modelsetting(pretrain_path):
     
     return opts_dict, model
 
+def connectTH(mask, map, mode=1, threshold=150):
+    # identify pixel connected size
+    pgroup, Nlabels = ndimage.measurements.label(map)
+    label_size = [(pgroup == label).sum() for label in range(Nlabels + 1)]
+    # remove those above a threshold
+    mode ^= 1
+    for label,size in enumerate(label_size):
+        if size < threshold:
+            mask[pgroup == label] = mode
+
 if __name__ == "__main__":
-    pretrain_path = './result/U+_nc_efb4_noisy_fd0/'
+    pretrain_path = './result/U+_nc_moreaug_FTL/'
 
     opts_dict, model = modelsetting(pretrain_path)
     model.eval()
@@ -50,9 +61,11 @@ if __name__ == "__main__":
             with torch.no_grad():
                 mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
             mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
-            mask = np.where(mask > THRESHOLD, 1, 0) * 255
+            mask = np.where(mask > THRESHOLD, 1, 0)
+            connectTH(mask, mask, mode=1, threshold=420)
+            connectTH(mask, mask^1, mode=0, threshold=10000)
             image_id = image_id.replace('jpg', 'png')
-            cv2.imwrite(os.path.join(Public_save_path, image_id), mask)
+            cv2.imwrite(os.path.join(Public_save_path, image_id), mask*255)
 
     elif opts_dict['iscrop'] == 1:
         cropPath = ds_dict['crop_public_root']
