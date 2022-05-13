@@ -1,3 +1,5 @@
+from audioop import mul
+import sched
 import torch
 import pytorch_lightning as pl
 import segmentation_models_pytorch as smp
@@ -64,6 +66,12 @@ class Litsmp(pl.LightningModule):
         loss = self.loss(y_pred, y)
         self.log(f"train loss", loss, on_epoch=True)
         record.update({'loss': loss})
+
+        # learning rate scheduler update
+        # schedulers = self.lr_schedulers()
+        # for sch in schedulers:
+        #     sch.step()
+        # sch.get_lr()
         # update metrics logs
         for metric_fn in self.metrics:
             metric_value = metric_fn(y_pred, y)
@@ -102,5 +110,16 @@ class Litsmp(pl.LightningModule):
             scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
                             optimizer,
                             **self.opts_dict['sched']
+                        )
+        elif sched_type == 'MultiplicativeLR':
+            def lambda_rule(epoch):
+                multiplicative = 1
+                if epoch == self.opts_dict['lrboost']: # set lrboost 100 to increase LR by 10 on epoch 100
+                    multiplicative = 10
+                return multiplicative
+            scheduler = torch.optim.lr_scheduler.MultiplicativeLR(
+                            optimizer,
+                            **self.opts_dict['sched'],
+                            lr_lambda = lambda_rule
                         )
         return [optimizer], [scheduler]
