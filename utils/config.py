@@ -1,7 +1,24 @@
-import os
+import os, torch
 import yaml
 import wandb
+from utils.network import Litsmp
 from pytorch_lightning.loggers import WandbLogger
+
+def loadmodel(pretrain_path):
+    for pth in os.listdir(pretrain_path):
+        if '.ckpt' in pth:
+            weight = os.path.join(pretrain_path, pth)
+            break
+    checkpoint_dict = torch.load(weight)
+    if 'hyper_parameters' in checkpoint_dict:
+        opts_dict = checkpoint_dict['hyper_parameters']
+        model = Litsmp.load_from_checkpoint(weight)
+    else:
+        cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
+        opts_dict = load_wdb_config(cfgpath)
+        model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
+    
+    return opts_dict, model
 
 def load_wdb_config(
         cfgpath='./result/Unet_efnb4_nonorm/expconfig.yaml',

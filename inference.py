@@ -3,26 +3,9 @@ import numpy as np
 from scipy import ndimage
 from tqdm import tqdm
 from utils.dataloader import get_preprocessing
-from utils.config import load_wdb_config, load_setting
-from utils.network import Litsmp
+from utils.config import load_setting, loadmodel
 
 THRESHOLD = 0.85
-
-def modelsetting(pretrain_path):
-    for pth in os.listdir(pretrain_path):
-        if pth.find('.ckpt') != -1:
-            weight = os.path.join(pretrain_path, pth)
-            break
-    checkpoint_dict = torch.load(weight)
-    if 'hyper_parameters' in checkpoint_dict:
-        opts_dict = checkpoint_dict['hyper_parameters']
-        model = Litsmp.load_from_checkpoint(weight)
-    else:
-        cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
-        opts_dict = load_wdb_config(cfgpath)
-        model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
-    
-    return opts_dict, model
 
 def connectTH(mask, map, mode=1, threshold=150):
     # identify pixel connected size
@@ -37,7 +20,7 @@ def connectTH(mask, map, mode=1, threshold=150):
 if __name__ == "__main__":
     pretrain_path = './result/U+_nc_moreaug_FTL_fd0/'
 
-    opts_dict, model = modelsetting(pretrain_path)
+    opts_dict, model = loadmodel(pretrain_path)
     model.eval()
 
     ds_dict = load_setting()

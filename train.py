@@ -6,7 +6,7 @@ from pytorch_lightning import seed_everything
 
 from utils.network import Litsmp
 from utils.dataloader import create_trainloader
-from utils.config import wandb_config, load_setting
+from utils.config import wandb_config, load_setting, loadmodel
 
 # Set seed
 seed = 42
@@ -32,7 +32,17 @@ def main():
 
 def trainprocess(project, name, ds_cfg):
     opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
-
+    
+    # model parameter
+    if opts_dict['isckpt'] is not 'None':
+        for pth in os.listdir(opts_dict['isckpt']):
+            if '.ckpt' in pth:
+                weight = os.path.join(opts_dict['isckpt'], pth)
+                break
+        print(f'\nLoad weight from: {weight}\n')
+        model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
+    else:
+        model = Litsmp(opts_dict)
     # dataloader
     dataset_root = ds_cfg['crop_dataset_root'] \
         if opts_dict['iscrop'] == 1 else ds_cfg['dataset_root']
@@ -46,18 +56,20 @@ def trainprocess(project, name, ds_cfg):
                                 )
     # training
     modeltrain(
+        model=model,
+        opts_dict=opts_dict,
         trainloader=trainloader,
         validloader=validloader,
         wandb_logger=wandb_logger,
-        opts_dict=opts_dict,
         )
 
 
 def modeltrain(
+        model,
+        opts_dict,
         trainloader,
         validloader,
         wandb_logger,
-        opts_dict
         ):
     epochs = opts_dict['epochs']
     save_path = opts_dict['savepath']
@@ -71,8 +83,6 @@ def modeltrain(
         )
     lr_monitor = LearningRateMonitor()
     
-    # model parameter
-    model = Litsmp(opts_dict)
     trainer = Trainer(
         logger=wandb_logger,
         max_epochs=epochs,

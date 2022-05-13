@@ -1,8 +1,11 @@
 # https://smp.readthedocs.io/
-aug.resize_height:
-  value: 800
 iscrop:                     # crop=1, noncrop=0
   value: 0
+isckpt:                     # default: None, ./checkpoint
+  value: ./checkpoint
+
+aug.resize_height:
+  value: 800
 batchsize:
   value: 2
 accumulate_grad_batches:    # default: 1
