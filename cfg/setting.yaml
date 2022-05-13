@@ -1,5 +1,5 @@
 project: 'TBrain_histapathology_segmentation'
-name: 'U+_nc_efv4ap_bftloss'
+name: 'dl_nc_serxt50_bftloss'
 
 # data, /work/u7085556/TBrain_histapathology_seg
 root: '/work/u7085556/TBrain_histapathology_seg'

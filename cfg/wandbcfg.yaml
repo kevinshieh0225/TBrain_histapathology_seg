@@ -12,13 +12,13 @@ classes:
 epochs:
   value: 80
 
-# timm-efficientnet-b4, tf_efficientnetv2_s_in21ft1k, tu-tf_efficientnet_b4_ap
+# timm-efficientnet-b4, tu-tf_efficientnetv2_s_in21ft1k, se_resnext50_32x4d
 model.encoder_name:
-  value: timm-efficientnet-b4
+  value: se_resnext50_32x4d
 model.encoder_weights:      # imagenet / advprop / noisy-student
-  value: advprop
-model.type:                 # DeepLabV3Plus, UnetPlusPlus
-  value: UnetPlusPlus
+  value: imagenet
+model.type:                 # DeepLabV3, DeepLabV3Plus, Unet, UnetPlusPlus
+  value: DeepLabV3
 
 loss.type:
   value: BCEFocalTverskyLoss   
@@ -26,7 +26,7 @@ loss.type:
 loss.BCEratio:
   value: 2
 loss.alpha:
-  value: 0.54
+  value: 0.5
 loss.gamma:
   value: 1
 

@@ -29,7 +29,11 @@ class Litsmp(pl.LightningModule):
 
         # model initial
         model_type = self.opts_dict['model'].pop('type')
-        if model_type == 'DeepLabV3Plus':
+        if model_type == 'DeepLabV3':
+            self.model = smp.DeepLabV3(
+                    **self.opts_dict['model']
+                )
+        elif model_type == 'DeepLabV3Plus':
             self.model = smp.DeepLabV3Plus(
                     **self.opts_dict['model']
                 )

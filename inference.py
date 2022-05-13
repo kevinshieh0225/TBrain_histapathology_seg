@@ -6,7 +6,7 @@ from utils.dataloader import get_preprocessing
 from utils.config import load_wdb_config, load_setting
 from utils.network import Litsmp
 
-THRESHOLD = 0.75
+THRESHOLD = 0.85
 
 def modelsetting(pretrain_path):
     for pth in os.listdir(pretrain_path):
@@ -35,7 +35,7 @@ def connectTH(mask, map, mode=1, threshold=150):
             mask[pgroup == label] = mode
 
 if __name__ == "__main__":
-    pretrain_path = './result/U+_nc_moreaug_FTL/'
+    pretrain_path = './result/U+_nc_moreaug_FTL_fd0/'
 
     opts_dict, model = modelsetting(pretrain_path)
     model.eval()
