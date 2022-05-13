@@ -5,7 +5,19 @@ import pytorch_lightning as pl
 import segmentation_models_pytorch as smp
 from utils.loss import TverskyLoss, FocalTverskyLoss, BCEFocalTverskyLoss
 import ttach as tta
+from  utils.scheduler import TimmCosineLRScheduler
 import copy
+
+class TimmStepLRScheduler(torch.optim.lr_scheduler.LambdaLR):
+    def __init__(self, optim, **kwargs):
+        self.init_lr = optim.param_groups[0]["lr"]
+        self.timmsteplr = CosineLRScheduler(optim, **kwargs)
+        super().__init__(optim, self)
+
+    def __call__(self, epoch):
+        desired_lr = self.timmsteplr.get_epoch_values(epoch)[0]
+        mult = desired_lr / self.init_lr
+        return mult
 
 class Litsmp(pl.LightningModule):
     def __init__(self, opts_dict):
@@ -121,5 +133,9 @@ class Litsmp(pl.LightningModule):
                             optimizer,
                             **self.opts_dict['sched'],
                             lr_lambda = lambda_rule
+                        )
+        elif sched_type == 'timm_CosineLRScheduler':
+            scheduler = TimmCosineLRScheduler(optimizer,
+                            **self.opts_dict['sched'],
                         )
         return [optimizer], [scheduler]

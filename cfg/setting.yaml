@@ -1,8 +1,8 @@
 project: 'TBrain_histapathology_segmentation'
-name: 'dl_nc_serxt50_bftloss'
+name: 'u++_nc_t-efb4_bftloss_cosine_decay'
 
 # data, /work/u7085556/TBrain_histapathology_seg
-root: '/work/u7085556/TBrain_histapathology_seg'
+root: 'data'
 dataset_root: 'SEG_Train_Datasets'
 crop_dataset_root: 'SEG_Train_Datasets_Resize'
 

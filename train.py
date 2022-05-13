@@ -34,7 +34,7 @@ def trainprocess(project, name, ds_cfg):
     opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
     
     # model parameter
-    if opts_dict['isckpt'] is not 'None':
+    if opts_dict['isckpt'] != 'None':
         for pth in os.listdir(opts_dict['isckpt']):
             if '.ckpt' in pth:
                 weight = os.path.join(opts_dict['isckpt'], pth)
