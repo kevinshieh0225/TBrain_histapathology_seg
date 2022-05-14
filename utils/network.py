@@ -1,5 +1,3 @@
-from audioop import mul
-import sched
 import torch
 import pytorch_lightning as pl
 import segmentation_models_pytorch as smp

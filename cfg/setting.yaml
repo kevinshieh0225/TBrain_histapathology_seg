@@ -2,18 +2,20 @@ project: 'TBrain_histapathology_segmentation'
 name: 'u++_nc_t-efb4_bftloss_cosdecay_tin60'
 
 # data, /work/u7085556/TBrain_histapathology_seg
-root: 'data'
+root: '/work/u7085556/TBrain_histapathology_seg'
 dataset_root: 'SEG_Train_Datasets'
 crop_dataset_root: 'SEG_Train_Datasets_Resize'
-
-train_valid_list: './distribute/train_valid_list_0.json'
-iscvl: 0
-# not cross validation: 0, 5-fold: 1
 
 #Public_Image
 public_root: 'Public_Image'
 crop_public_root: 'Public_Image_Resize'
 inference_root: 'inference'
+
+listroot: './trainlist'
+# 5fold_list, 10fold_list
+train_valid_list: '10fold_list'
+# not cross validation: 0, 5-fold: 1
+iscvl: 0
 
 # development 
 dev: 0
