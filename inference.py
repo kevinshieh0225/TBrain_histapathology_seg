@@ -46,7 +46,7 @@ if __name__ == "__main__":
             mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
             mask = np.where(mask > THRESHOLD, 1, 0)
             connectTH(mask, mask, mode=1, threshold=420)
-            connectTH(mask, mask^1, mode=0, threshold=10000)
+            connectTH(mask, mask^1, mode=0, threshold=50000)
             image_id = image_id.replace('jpg', 'png')
             cv2.imwrite(os.path.join(Public_save_path, image_id), mask*255)
 

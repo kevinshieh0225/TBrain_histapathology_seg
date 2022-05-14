@@ -6,7 +6,7 @@ from pytorch_lightning import seed_everything
 
 from utils.network import Litsmp
 from utils.dataloader import create_trainloader
-from utils.config import wandb_config, load_setting, loadmodel
+from utils.config import wandb_config, load_setting
 
 # Set seed
 seed = 42
@@ -16,18 +16,20 @@ seed_everything(seed)
 def main():
     ds_cfg = load_setting()
     project, name = ds_cfg['project'], ds_cfg['name']
+    fold_list_root = ds_cfg['train_valid_list']
+    n_fold = 5 if '5' in fold_list_root else 10
     if ds_cfg['dev'] == 1:
         project = project + '_dev'
     if(ds_cfg['iscvl'] == 1):
-        fold_list_root = ds_cfg['train_valid_list'].replace('_0.json', '')
-        for n_fold in range(2, 5):
-            name = ds_cfg['name'] + f'_fd{n_fold}'
-            ds_cfg['train_valid_list'] = f'{fold_list_root}_{n_fold}.json'
-            print(f'\nStart fold {n_fold} experiment\n')
+        for n in range(n_fold):
+            name = ds_cfg['name'] + f'_{n_fold}fd{n}'
+            ds_cfg['train_valid_list'] = f'{fold_list_root}_{n}.json'
+            print(f'\nStart fold {n}/{n_fold} experiment\n')
             trainprocess(project, name, ds_cfg)
             wandb.finish()
     else:
-        name = ds_cfg['name'] + '_fd0'
+        ds_cfg['train_valid_list'] = fold_list_root + '_0.json'
+        name = ds_cfg['name'] + f'_{n_fold}fd0'
         trainprocess(project, name, ds_cfg)
 
 def trainprocess(project, name, ds_cfg):
@@ -43,6 +45,7 @@ def trainprocess(project, name, ds_cfg):
         model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
     else:
         model = Litsmp(opts_dict)
+
     # dataloader
     dataset_root = ds_cfg['crop_dataset_root'] \
         if opts_dict['iscrop'] == 1 else ds_cfg['dataset_root']
@@ -78,8 +81,8 @@ def modeltrain(
     checkpoint_callback = ModelCheckpoint(
         dirpath=save_path,
         save_top_k=1,
-        monitor="valid loss",
-        mode="min",
+        monitor="valid fscore",
+        mode="max",
         )
     lr_monitor = LearningRateMonitor()
     

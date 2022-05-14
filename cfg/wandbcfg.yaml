@@ -7,9 +7,9 @@ isckpt:                     # default: None, ./checkpoint
 aug.resize_height:
   value: 800
 batchsize:
-  value: 3
+  value: 2
 accumulate_grad_batches:    # default: 1
-  value: 4
+  value: 6
 classes:
   value: ['stas']
 epochs:
@@ -44,27 +44,27 @@ optim.weight_decay:
 optim.nesterov:
   value: True
 
-# sched.T_0:
-#   value: 80
-# sched.T_mult:
-#   value: 1
-# sched.eta_min:
-#   value: 0.0005
-# sched.type:
-#   value: CosineAnnealingWR
-
 sched.type:
-  value: timm_CosineLRScheduler
-sched.t_initial:
+  value: CosineAnnealingWR
+sched.T_0:
   value: 80
-sched.lr_min:
-  value: 0.0001
-sched.decay_rate:
-  value: 0.01
-sched.t_in_epochs:
-  value: True
-sched.cycle_limit:
-  value: 2
+sched.T_mult:
+  value: 1
+sched.eta_min:
+  value: 0.0008
+
+# sched.type:
+#   value: timm_CosineLRScheduler
+# sched.t_initial:
+#   value: 80
+# sched.lr_min:
+#   value: 0.0001
+# sched.decay_rate:
+#   value: 0.01
+# sched.t_in_epochs:
+#   value: True
+# sched.cycle_limit:
+#   value: 2
 # sched.noise_range:
 #   value: (0, 150)
 # sched.noise_pct:

@@ -7,6 +7,9 @@ from utils.config import load_setting
 from sklearn.cluster import KMeans
 from sklearn.model_selection import StratifiedKFold
 
+NFOLDS = 10
+list_json = './trainlist/10fold_list'
+
 def rgbw_map(img_folder):
     img_id_list = [image_id.split('.')[0] for image_id in os.listdir(img_folder)]
     rbg_list = []
@@ -35,9 +38,8 @@ if __name__ == "__main__":
     ds_cfg = load_setting()
     dataset_root = ds_cfg['dataset_root']
     img_folder = os.path.join(dataset_root, 'Train_Images')
-    os.makedirs('./distribute', exist_ok=True)
-    respath = './distribute/distrubution.csv'
-    list_json = './distribute/train_valid_list'
+    os.makedirs('./trainlist', exist_ok=True)
+    respath = './trainlist/distrubution.csv'
     rgbdstb = {}
     if not os.path.isfile(respath):
         img_id_list, rbg_list = rgbw_map(img_folder)
@@ -51,7 +53,7 @@ if __name__ == "__main__":
 
     id_list = list(rgbdstb.keys())
     cl_list = list(rgbdstb.values())
-    skf = StratifiedKFold(n_splits = 5, random_state = 7, shuffle = True) 
+    skf = StratifiedKFold(n_splits = NFOLDS, random_state = 7, shuffle = True) 
     for idx, (train_index, val_index) in enumerate(skf.split(np.zeros(len(id_list)),cl_list)):
         train_id = pd.DataFrame(id_list).iloc[train_index][0].tolist()
         valid_id = pd.DataFrame(id_list).iloc[val_index][0].tolist()
