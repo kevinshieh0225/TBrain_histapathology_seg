@@ -1,11 +1,10 @@
 import torch
 import pytorch_lightning as pl
 import segmentation_models_pytorch as smp
-from utils.loss import TverskyLoss, FocalTverskyLoss, BCEFocalTverskyLoss
+from utils.loss import TverskyLoss, FocalTverskyLoss, BCEFocalTverskyLoss, IoULoss
 import ttach as tta
 from  utils.scheduler import TimmCosineLRScheduler
 import copy
-
 
 class Litsmp(pl.LightningModule):
     def __init__(self, opts_dict):
@@ -22,12 +21,15 @@ class Litsmp(pl.LightningModule):
             self.loss = smp.utils.losses.CrossEntropyLoss()
         elif loss_type == 'BCEWithLogitsLoss':
             self.loss = smp.utils.losses.BCEWithLogitsLoss()
+        elif loss_type == 'IoULoss':
+            self.loss = IoULoss(**self.opts_dict['loss'])
         elif loss_type == 'TverskyLoss':
             self.loss = TverskyLoss(**self.opts_dict['loss'])
         elif loss_type == 'FocalTverskyLoss':
             self.loss = FocalTverskyLoss(**self.opts_dict['loss'])
         elif loss_type == 'BCEFocalTverskyLoss':
             self.loss = BCEFocalTverskyLoss(**self.opts_dict['loss'])
+
 
         # model initial
         model_type = self.opts_dict['model'].pop('type')

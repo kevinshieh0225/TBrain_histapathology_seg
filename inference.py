@@ -4,8 +4,10 @@ from scipy import ndimage
 from tqdm import tqdm
 from utils.dataloader import get_preprocessing
 from utils.config import load_setting, loadmodel
+import copy
 
 THRESHOLD = 0.85
+pretrain_path = './result/dl_nc_serxt50_bftloss_fd0/'
 
 def connectTH(mask, map, mode=1, threshold=150):
     # identify pixel connected size
@@ -18,8 +20,6 @@ def connectTH(mask, map, mode=1, threshold=150):
             mask[pgroup == label] = mode
 
 if __name__ == "__main__":
-    pretrain_path = './result/U+_nc_moreaug_FTL_fd0/'
-
     opts_dict, model = loadmodel(pretrain_path)
     model.eval()
 
@@ -45,7 +45,10 @@ if __name__ == "__main__":
                 mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
             mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
             mask = np.where(mask > THRESHOLD, 1, 0)
-            connectTH(mask, mask, mode=1, threshold=420)
+            mask_copy = copy.deepcopy(mask)
+            connectTH(mask_copy, mask_copy, mode=1, threshold=400)
+            if np.sum(mask_copy) > 400:
+                mask = mask_copy
             connectTH(mask, mask^1, mode=0, threshold=50000)
             image_id = image_id.replace('jpg', 'png')
             cv2.imwrite(os.path.join(Public_save_path, image_id), mask*255)

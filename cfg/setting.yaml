@@ -1,5 +1,5 @@
 project: 'TBrain_histapathology_segmentation'
-name: 'U+_nc_ef4ap_bftloss'
+name: 'U+_nc_ef4ap_FTL'
 
 # data, /work/u7085556/TBrain_histapathology_seg
 root: '/work/u7085556/TBrain_histapathology_seg'
@@ -13,9 +13,9 @@ inference_root: 'inference'
 
 listroot: './trainlist'
 # 5fold_list, 10fold_list
-train_valid_list: '10fold_list'
-# not cross validation: 0, 5-fold: 1
-iscvl: 0
+train_valid_list: '5fold_list'
+# not cross validation: 0, cv: 1
+iscvl: 1
 
 # development 
 dev: 0

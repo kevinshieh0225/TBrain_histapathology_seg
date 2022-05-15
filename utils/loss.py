@@ -132,16 +132,14 @@ class FocalTverskyLoss(nn.Module):
         return FocalTversky
 
 class BCEFocalTverskyLoss(nn.Module):
-    def __init__(self, BCEratio=3, alpha=0.5, gamma=1):
+    def __init__(self, BCEratio=1, alpha=0.5, gamma=1):
         super(BCEFocalTverskyLoss, self).__init__()
         self.BCEratio = BCEratio
         self.alpha = alpha
         self.beta = 1 - alpha
         self.gamma = gamma
 
-    def forward(self, inputs, targets, smooth=0.25):
-        bceloss = F.binary_cross_entropy_with_logits(inputs, targets)
-        #comment out if your model contains a sigmoid or equivalent activation layer
+    def forward(self, inputs, targets, smooth=1):
         inputs = torch.sigmoid(inputs)       
         
         #flatten label and prediction tensors
@@ -155,5 +153,6 @@ class BCEFocalTverskyLoss(nn.Module):
         
         Tversky = (TP + smooth) / (TP + self.alpha*FP + self.beta*FN + smooth)  
         FocalTversky = (1 - Tversky) ** self.gamma
+        bceloss = F.binary_cross_entropy(inputs.float(), targets.float(), reduction='mean')
 
         return FocalTversky + bceloss * self.BCEratio

@@ -9,8 +9,8 @@ from utils.dataloader import create_trainloader
 from utils.config import wandb_config, load_setting
 
 # Set seed
-seed = 42
-seed_everything(seed)
+# seed = 42
+# seed_everything(seed)
 
 
 def main():
@@ -21,7 +21,7 @@ def main():
     if ds_cfg['dev'] == 1:
         project = project + '_dev'
     if(ds_cfg['iscvl'] == 1):
-        for n in range(n_fold):
+        for n in range(2, n_fold):
             name = ds_cfg['name'] + f'_{n_fold}fd{n}'
             ds_cfg['train_valid_list'] = f'{fold_list_root}_{n}.json'
             print(f'\nStart fold {n}/{n_fold} experiment\n')
