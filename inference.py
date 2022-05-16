@@ -6,8 +6,8 @@ from utils.dataloader import get_preprocessing
 from utils.config import load_setting, loadmodel
 import copy
 
-THRESHOLD = 0.85
-pretrain_path = './result/dl_nc_serxt50_bftloss_fd0/'
+THRESHOLD = 0.75
+pretrain_path = './result/U+_nc_ef4ap_FTL_5fd4/'
 
 def connectTH(mask, map, mode=1, threshold=150):
     # identify pixel connected size

@@ -7,12 +7,11 @@ import copy
 
 name = 'voting'
 model_path = {
-        'U+_nc_moreaug_FTL_fd0':1.5,
-        'U+_nc_efv4ap_bftloss_fd0-1':1,
-        'U+_nc_efb4_noisy_fd0':1,
-        'base_noncrop_list_bigimg':1,
-        'U+_nc_moreaug_FTL':1.5,
-        'U+_nc_ef4ap_bftloss_10fd0':0.75,
+        'U+_nc_moreaug_FTL_fd0':1,
+        'U+_nc_moreaug_FTL_fd1':1,
+        'U+_nc_ef4ap_FTL_5fd2':1,
+        'U+_nc_ef4ap_FTL_5fd3':1,
+        'U+_nc_ef4ap_FTL_5fd4':1,
         }
 height = 942
 width = 1716

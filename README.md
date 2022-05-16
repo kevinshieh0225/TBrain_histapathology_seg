@@ -5,11 +5,15 @@ TBrain histapathology segmentation contest.
 ```sh
 sh preprocess.sh
 ```
-
-## ToDo
-1. CUDA error: batchsize = 8, imagesize 640 * 1280, backbone can only use resnet50 (efficeintnet cant use)
-2. Inference (pytorch lighting): speculate and analyze result
-3. Augmentation
+## cross validation
+```
+voting-1                0.89977
+U+_nc_moreaug_FTL_fd0	0.892328
+U+_nc_moreaug_FTL_fd1	0.888392
+U+_nc_ef4ap_FTL_5fd2	0.890481
+U+_nc_ef4ap_FTL_5fd3
+U+_nc_ef4ap_FTL_5fd4
+```
 
 ## Exp
 1. backbone
