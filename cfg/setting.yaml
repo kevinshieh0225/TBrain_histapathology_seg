@@ -13,9 +13,9 @@ inference_root: 'inference'
 
 listroot: './trainlist'
 # 5fold_list, 10fold_list
-train_valid_list: '5fold_list'
+train_valid_list: '10fold_list'
 # not cross validation: 0, cv: 1
-iscvl: 1
+iscvl: 0
 
 # development 
 dev: 0
