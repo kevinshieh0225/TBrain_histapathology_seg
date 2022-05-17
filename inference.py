@@ -7,7 +7,7 @@ from utils.config import load_setting, loadmodel
 import copy
 
 THRESHOLD = 0.75
-pretrain_path = './result/U+_nc_ef4ap_FTL_5fd4/'
+pretrain_path = './result/U+_nc_moreaug_FTL/'
 
 def connectTH(mask, map, mode=1, threshold=150):
     # identify pixel connected size
@@ -22,7 +22,7 @@ def connectTH(mask, map, mode=1, threshold=150):
 if __name__ == "__main__":
     opts_dict, model = loadmodel(pretrain_path)
     model.eval()
-
+    model.to('cuda')
     ds_dict = load_setting()
     Public_Image = ds_dict['public_root']
     Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname'])
@@ -40,7 +40,7 @@ if __name__ == "__main__":
             if image.shape != (height, width, 3):
                 image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
             image = preprocess(image=image)['image']
-            image = image.unsqueeze(0)
+            image = image.unsqueeze(0).to('cuda')
             with torch.no_grad():
                 mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
             mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
