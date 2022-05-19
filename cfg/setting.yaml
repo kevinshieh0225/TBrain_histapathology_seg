@@ -10,7 +10,6 @@ crop_dataset_root: 'SEG_Train_Datasets_Resize'
 public_root: 'Public_Image'
 crop_public_root: 'Public_Image_Resize'
 inference_root: 'inference'
-
 listroot: './trainlist'
 # 5fold_list, 10fold_list
 train_valid_list: '10fold_list'

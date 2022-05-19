@@ -79,10 +79,10 @@ def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
 
     return opts_dict, wandb_logger
 
-def searchnewname(expname_base):
+def searchnewname(expname_base, root='./result'):
     expname = expname_base
     num = 0
-    while(os.path.isdir(os.path.join('./result', expname))):
+    while(os.path.isdir(os.path.join(root, expname))):
         num += 1
         expname = f'{expname_base}-{num}'
     return expname
