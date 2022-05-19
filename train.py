@@ -9,8 +9,8 @@ from utils.dataloader import create_trainloader
 from utils.config import wandb_config, load_setting
 
 # Set seed
-seed = 42
-seed_everything(seed)
+# seed = 42
+# seed_everything(seed)
 
 
 def main():
@@ -21,7 +21,7 @@ def main():
     if ds_cfg['dev'] == 1:
         project = project + '_dev'
     if(ds_cfg['iscvl'] == 1):
-        for n in range(n_fold):
+        for n in range(1, n_fold):
             name = ds_cfg['name'] + f'_{n_fold}fd{n}'
             ds_cfg['train_valid_list'] = f'{fold_list_root}_{n}.json'
             print(f'\nStart fold {n}/{n_fold} experiment\n')
@@ -84,12 +84,19 @@ def modeltrain(
         monitor="valid fscore",
         mode="max",
         )
+    save_last_checkpoint = ModelCheckpoint(
+        save_top_k=1,
+        monitor="epoch",
+        mode="max",
+        dirpath=save_path,
+        filename="last_{epoch:02d}-{global_step}",
+    )
     lr_monitor = LearningRateMonitor()
     
     trainer = Trainer(
         logger=wandb_logger,
         max_epochs=epochs,
-        callbacks=[checkpoint_callback, lr_monitor],
+        callbacks=[checkpoint_callback, save_last_checkpoint, lr_monitor],
         gpus=-1,
         accumulate_grad_batches=opts_dict['accumulate_grad_batches'],
         # amp_backend="apex",

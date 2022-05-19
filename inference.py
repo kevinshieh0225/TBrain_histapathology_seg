@@ -1,11 +1,12 @@
+from operator import truediv
 import os, torch, cv2
 import numpy as np
 from scipy import ndimage
 from tqdm import tqdm
 from utils.dataloader import get_preprocessing
 from utils.config import load_setting, loadmodel
-
-THRESHOLD = 0.85
+import copy
+THRESHOLD = 0.75
 
 def connectTH(mask, map, mode=1, threshold=150):
     # identify pixel connected size
@@ -18,14 +19,19 @@ def connectTH(mask, map, mode=1, threshold=150):
             mask[pgroup == label] = mode
 
 if __name__ == "__main__":
-    pretrain_path = './result/U+_nc_moreaug_FTL_fd0/'
-
-    opts_dict, model = loadmodel(pretrain_path)
+    pretrain_path = './result/U+_nc_ef4ap_FTL_10fd2'
+    load_last = False
+    device = 'cuda:0' # cpu
+    opts_dict, model = loadmodel(pretrain_path, load_last)
     model.eval()
+    model.to(device)
 
     ds_dict = load_setting()
     Public_Image = ds_dict['public_root']
-    Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname'])
+    if load_last == True:
+        Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname']+'_last')
+    else:
+        Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname'])
     os.makedirs(Public_save_path, exist_ok=True)
 
     height = opts_dict['aug']['resize_height']
@@ -41,11 +47,17 @@ if __name__ == "__main__":
                 image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
             image = preprocess(image=image)['image']
             image = image.unsqueeze(0)
+            image = image.to(device)
             with torch.no_grad():
                 mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
             mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
             mask = np.where(mask > THRESHOLD, 1, 0)
-            connectTH(mask, mask, mode=1, threshold=420)
+            # connectTH(mask, mask, mode=1, threshold=420)
+            # connectTH(mask, mask^1, mode=0, threshold=50000)
+            mask_copy = copy.deepcopy(mask)
+            connectTH(mask_copy, mask_copy, mode=1, threshold=400)
+            if np.sum(mask_copy) > 400:
+                mask = mask_copy
             connectTH(mask, mask^1, mode=0, threshold=50000)
             image_id = image_id.replace('jpg', 'png')
             cv2.imwrite(os.path.join(Public_save_path, image_id), mask*255)

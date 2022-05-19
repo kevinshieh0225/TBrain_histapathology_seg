@@ -4,11 +4,17 @@ import wandb
 from utils.network import Litsmp
 from pytorch_lightning.loggers import WandbLogger
 
-def loadmodel(pretrain_path):
+def loadmodel(pretrain_path, load_last = False):
     for pth in os.listdir(pretrain_path):
         if '.ckpt' in pth:
-            weight = os.path.join(pretrain_path, pth)
-            break
+            if 'last' in pth and load_last == True:
+                weight = os.path.join(pretrain_path, pth)
+                print(weight)
+                break
+            elif 'last' not in pth and load_last == False:
+                weight = os.path.join(pretrain_path, pth)
+                print(weight)
+                break
     checkpoint_dict = torch.load(weight)
     if 'hyper_parameters' in checkpoint_dict:
         opts_dict = checkpoint_dict['hyper_parameters']

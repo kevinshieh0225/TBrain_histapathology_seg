@@ -9,7 +9,7 @@ aug.resize_height:
 batchsize:
   value: 2
 accumulate_grad_batches:    # default: 1
-  value: 6
+  value: 3
 classes:
   value: ['stas']
 epochs:
@@ -24,14 +24,14 @@ model.type:                 # DeepLabV3, DeepLabV3Plus, Unet, UnetPlusPlus
   value: UnetPlusPlus
 
 loss.type:
-  value: BCEFocalTverskyLoss   
+  value: FocalTverskyLoss   
 # BCEFocalTverskyLoss
-loss.BCEratio:
-  value: 2
-loss.alpha:
-  value: 0.5
-loss.gamma:
-  value: 1
+# loss.BCEratio:
+#   value: 2
+# loss.alpha:
+#   value: 0.5
+# loss.gamma:
+#   value: 1
 
 optim.lr:
   value: 0.01     # 0.01, 0.001, 0.0003
@@ -58,7 +58,7 @@ sched.type:
 sched.t_initial:
   value: 60
 sched.lr_min:
-  value: 0.0001
+  value: 0.00001
 sched.decay_rate:
   value: 0.01
 sched.t_in_epochs:
