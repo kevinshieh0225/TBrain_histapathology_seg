@@ -52,21 +52,6 @@ if __name__ == "__main__":
     soup_model.eval()
     soup_model.to(device)
 
-
-    # path1 = './result/U+_nc_ef4ap_FTL_soup_0'
-    # path2 = './result/U+_nc_ef4ap_FTL_soup_1'
-    # _, soup_model = loadmodel(path1, load_last)
-    # opts_dict, model2 = loadmodel(path2, load_last)
-
-    # sdA = soup_model.state_dict()
-    # sdB = model2.state_dict()
-
-    # for key in sdA:
-    #     sdB[key] = (sdB[key] + sdA[key]) / 2.
-    # soup_model.load_state_dict(sdB)
-    # soup_model.eval()
-    # soup_model.to(device)
-
     ds_dict = load_setting()
     Public_Image = ds_dict['public_root']
     Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname']+'_soup')
