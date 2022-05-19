@@ -16,5 +16,9 @@ train_valid_list: '10fold_list'
 # not cross validation: 0, 5-fold: 1
 iscvl: 1
 
-# development 
-dev: 0
+#train model soup (disable use soup : 0)
+soup: 1 
+# number of models to train
+ningredients: 5
+# if using pretrained model on fold 4 base_fold should be the same in number
+base_fold: 4

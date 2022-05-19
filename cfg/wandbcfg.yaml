@@ -2,7 +2,9 @@
 iscrop:                     # crop=1, noncrop=0
   value: 0
 isckpt:                     # default: None, ./checkpoint
-  value: 'None'
+  value: 'result/U+_nc_ef4ap_FTL_10fd4'
+loadlast:
+  value: False
 
 aug.resize_height:
   value: 800
@@ -13,7 +15,7 @@ accumulate_grad_batches:    # default: 1
 classes:
   value: ['stas']
 epochs:
-  value: 120
+  value: 20
 
 # timm-efficientnet-b4, tu-tf_efficientnetv2_s_in21ft1k, se_resnext50_32x4d
 model.encoder_name:
@@ -34,7 +36,7 @@ loss.type:
 #   value: 1
 
 optim.lr:
-  value: 0.01     # 0.01, 0.001, 0.0003
+  value: 0.00005    # 0.01, 0.001, 0.0003
 optim.type:
   value: SGD       # SGD, Adam
 optim.momentum:
@@ -47,9 +49,9 @@ optim.nesterov:
 sched.type:
   value: timm_CosineLRScheduler
 sched.t_initial:
-  value: 60
+  value: 20
 sched.lr_min:
-  value: 0.00001
+  value: 0.000001
 sched.decay_rate:
   value: 0.01
 sched.t_in_epochs:
