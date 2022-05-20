@@ -15,6 +15,7 @@ from utils.config import wandb_config, load_setting, loadmodel
 
 def main():
     ds_cfg = load_setting()
+    
     project, name = ds_cfg['project'], ds_cfg['name']
     fold_list_root = ds_cfg['train_valid_list']
     n_fold = 5 if '5' in fold_list_root else 10
@@ -26,7 +27,7 @@ def main():
             name = ds_cfg['name'] + f'_soup_{n}'
             ds_cfg['train_valid_list'] = f'{fold_list_root}_{fold_number}.json'
             print(f'\nCooking soup {n}/{n_ingreadients}\n')
-            trainprocess(project, name, ds_cfg)
+            trainprocess(project, name, ds_cfg, train_cfg = 'cfg/soupcfg.yaml', soup = True)
             wandb.finish()
     elif(ds_cfg['iscvl'] == 1):
         for n in range(1, n_fold):
@@ -40,14 +41,14 @@ def main():
         name = ds_cfg['name'] + f'_{n_fold}fd0'
         trainprocess(project, name, ds_cfg)
 
-def trainprocess(project, name, ds_cfg):
-    opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
+def trainprocess(project, name, ds_cfg, train_cfg = 'None', soup = False ):
+    opts_dict, wandb_logger = wandb_config(project, name, cfg= 'cfg/wandbcfg.yaml')
     
-    # Load model from checkpoint
-    if opts_dict['isckpt'] != 'None': 
-        pretrain_path = opts_dict['isckpt']
-        load_last = opts_dict['loadlast']
-        _, model = loadmodel(pretrain_path, load_last)
+    # Load model from checkpoint (soup)
+    if soup == True:
+        pretrain_path = opts_dict['loadckpt'] # change to soupcfg.yaml
+        load_last = opts_dict['loadlast'] # change to soupcfg.yaml
+        _, model = loadmodel(pretrain_path, load_last, config_path= train_cfg)
     else: # new model
         model = Litsmp(opts_dict)
 

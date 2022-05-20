@@ -4,7 +4,7 @@ import wandb
 from utils.network import Litsmp
 from pytorch_lightning.loggers import WandbLogger
 
-def loadmodel(pretrain_path, load_last = False):
+def loadmodel(pretrain_path, load_last = False, config_path = 'None' ):
     for pth in os.listdir(pretrain_path):
         if '.ckpt' in pth:
             if 'last' in pth and load_last == True:
@@ -16,13 +16,14 @@ def loadmodel(pretrain_path, load_last = False):
                 print(weight)
                 break
     checkpoint_dict = torch.load(weight)
-    if 'hyper_parameters' in checkpoint_dict:
+    # loading your own config (soup)
+    if config_path != 'None':
+        opts_dict = load_wdb_config(config_path)
+        model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
+    # loading predefined config from the chekpoint
+    elif 'hyper_parameters' in checkpoint_dict:
         opts_dict = checkpoint_dict['hyper_parameters']
         model = Litsmp.load_from_checkpoint(weight)
-    else:
-        cfgpath = os.path.join(pretrain_path, 'expconfig.yaml')
-        opts_dict = load_wdb_config(cfgpath)
-        model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
     
     return opts_dict, model
 

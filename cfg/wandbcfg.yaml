@@ -1,8 +1,8 @@
 # https://smp.readthedocs.io/
 iscrop:                     # crop=1, noncrop=0
   value: 0
-isckpt:                     # default: None, ./checkpoint
-  value: 'result/U+_nc_ef4ap_FTL_10fd4'
+loadckpt:                     # default: None, ./checkpoint
+  value: 'result/U+_nc_ef4ap_FTL_10fd6'
 loadlast:
   value: False
 
