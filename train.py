@@ -6,7 +6,7 @@ from pytorch_lightning import seed_everything
 
 from utils.network import Litsmp
 from utils.dataloader import create_trainloader
-from utils.config import wandb_config, load_setting
+from utils.config import wandb_config, load_setting, loadmodel
 
 # Set seed
 # seed = 42
@@ -18,10 +18,18 @@ def main():
     project, name = ds_cfg['project'], ds_cfg['name']
     fold_list_root = ds_cfg['train_valid_list']
     n_fold = 5 if '5' in fold_list_root else 10
-    if ds_cfg['dev'] == 1:
-        project = project + '_dev'
-    if(ds_cfg['iscvl'] == 1):
-        for n in range(2, n_fold):
+    #soup
+    n_ingreadients = ds_cfg['ningredients'] 
+    fold_number = ds_cfg['base_fold']
+    if(ds_cfg['soup'] == 1):
+        for n in range(0, n_ingreadients):
+            name = ds_cfg['name'] + f'_soup_{n}'
+            ds_cfg['train_valid_list'] = f'{fold_list_root}_{fold_number}.json'
+            print(f'\nCooking soup {n}/{n_ingreadients}\n')
+            trainprocess(project, name, ds_cfg)
+            wandb.finish()
+    elif(ds_cfg['iscvl'] == 1):
+        for n in range(1, n_fold):
             name = ds_cfg['name'] + f'_{n_fold}fd{n}'
             ds_cfg['train_valid_list'] = f'{fold_list_root}_{n}.json'
             print(f'\nStart fold {n}/{n_fold} experiment\n')
@@ -35,15 +43,12 @@ def main():
 def trainprocess(project, name, ds_cfg):
     opts_dict, wandb_logger = wandb_config(project, name, cfg='cfg/wandbcfg.yaml')
     
-    # model parameter
-    if opts_dict['isckpt'] != 'None':
-        for pth in os.listdir(opts_dict['isckpt']):
-            if '.ckpt' in pth:
-                weight = os.path.join(opts_dict['isckpt'], pth)
-                break
-        print(f'\nLoad weight from: {weight}\n')
-        model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
-    else:
+    # Load model from checkpoint
+    if opts_dict['isckpt'] != 'None': 
+        pretrain_path = opts_dict['isckpt']
+        load_last = opts_dict['loadlast']
+        _, model = loadmodel(pretrain_path, load_last)
+    else: # new model
         model = Litsmp(opts_dict)
 
     # dataloader
@@ -84,12 +89,19 @@ def modeltrain(
         monitor="valid fscore",
         mode="max",
         )
+    save_last_checkpoint = ModelCheckpoint(
+        save_top_k=1,
+        monitor="epoch",
+        mode="max",
+        dirpath=save_path,
+        filename="last_{epoch:02d}-{global_step}",
+    )
     lr_monitor = LearningRateMonitor()
     
     trainer = Trainer(
         logger=wandb_logger,
         max_epochs=epochs,
-        callbacks=[checkpoint_callback, lr_monitor],
+        callbacks=[checkpoint_callback, save_last_checkpoint, lr_monitor],
         gpus=-1,
         accumulate_grad_batches=opts_dict['accumulate_grad_batches'],
         # amp_backend="apex",

@@ -1,3 +1,4 @@
+from operator import truediv
 import os, torch, cv2
 import numpy as np
 from scipy import ndimage
@@ -8,6 +9,7 @@ import copy
 
 THRESHOLD = 0.75
 pretrain_path = './result/U+_nc_ef4ap_FTLs_10fd4/'
+device = 'cuda' # cpu
 
 def connectTH(mask, map, mode=1, threshold=150):
     # identify pixel connected size
@@ -20,12 +22,21 @@ def connectTH(mask, map, mode=1, threshold=150):
             mask[pgroup == label] = mode
 
 if __name__ == "__main__":
+    load_last = False
+    
+    opts_dict, model = loadmodel(pretrain_path, load_last)
+    model.eval()
+    model.to(device)
+
     opts_dict, model = loadmodel(pretrain_path)
     model.eval()
-    model.to('cuda')
+    
     ds_dict = load_setting()
     Public_Image = ds_dict['public_root']
-    Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname'])
+    if load_last == True:
+        Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname']+'_last')
+    else:
+        Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname'])
     os.makedirs(Public_save_path, exist_ok=True)
 
     height = opts_dict['aug']['resize_height']
@@ -40,7 +51,7 @@ if __name__ == "__main__":
             if image.shape != (height, width, 3):
                 image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
             image = preprocess(image=image)['image']
-            image = image.unsqueeze(0).to('cuda')
+            image = image.unsqueeze(0).to(device)
             with torch.no_grad():
                 mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
             mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)

@@ -2,7 +2,7 @@ project: 'TBrain_histapathology_segmentation'
 name: 'U+_nc_ef4ap_FTLs'
 
 # data, /work/u7085556/TBrain_histapathology_seg
-root: '/work/u7085556/TBrain_histapathology_seg'
+root: 'data'
 dataset_root: 'SEG_Train_Datasets'
 crop_dataset_root: 'SEG_Train_Datasets_Resize'
 
@@ -10,12 +10,15 @@ crop_dataset_root: 'SEG_Train_Datasets_Resize'
 public_root: 'Public_Image'
 crop_public_root: 'Public_Image_Resize'
 inference_root: 'inference'
-
 listroot: './trainlist'
 # 5fold_list, 10fold_list
 train_valid_list: '10fold_list'
-# not cross validation: 0, cv: 1
-iscvl: 0
+# not cross validation: 0, 5-fold: 1
+iscvl: 1
 
-# development 
-dev: 0
+#train model soup (disable use soup : 0)
+soup: 1 
+# number of models to train
+ningredients: 5
+# if using pretrained model on fold 4 base_fold should be the same in number
+base_fold: 4

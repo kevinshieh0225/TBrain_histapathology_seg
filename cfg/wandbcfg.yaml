@@ -2,14 +2,16 @@
 iscrop:                     # crop=1, noncrop=0
   value: 0
 isckpt:                     # default: None, ./checkpoint
-  value: 'None'
+  value: 'result/U+_nc_ef4ap_FTL_10fd4'
+loadlast:
+  value: False
 
 aug.resize_height:
   value: 800
 batchsize:
   value: 2
 accumulate_grad_batches:    # default: 1
-  value: 6
+  value: 3
 classes:
   value: ['stas']
 epochs:
@@ -34,7 +36,7 @@ loss.type:
 #   value: 1
 
 optim.lr:
-  value: 0.01     # 0.01, 0.001, 0.0003
+  value: 0.00005    # 0.01, 0.001, 0.0003
 optim.type:
   value: SGD       # SGD, Adam
 optim.momentum:
@@ -45,28 +47,24 @@ optim.nesterov:
   value: True
 
 sched.type:
-  value: CosineAnnealingWR
-sched.T_0:
-  value: 80
-sched.T_mult:
-  value: 1
-sched.eta_min:
-  value: 0.0008
+  value: timm_CosineLRScheduler
+sched.t_initial:
+  value: 20
+sched.lr_min:
+  value: 0.000001
+sched.decay_rate:
+  value: 0.01
+sched.t_in_epochs:
+  value: True
+sched.cycle_limit:
+  value: 2
 
 # sched.type:
-#   value: timm_CosineLRScheduler
-# sched.t_initial:
-#   value: 60
-# sched.lr_min:
-#   value: 0.0001
-# sched.decay_rate:
-#   value: 0.01
-# sched.t_in_epochs:
-#   value: True
-# sched.cycle_limit:
-#   value: 2
-# sched.noise_range:
-#   value: (0, 150)
-# sched.noise_pct:
-#   value: True
+#   value: CosineAnnealingWR
+# sched.T_0:
+#   value: 80
+# sched.T_mult:
+#   value: 1
+# sched.eta_min:
+#   value: 0.0008
 
