@@ -87,7 +87,7 @@ class Litsmp(pl.LightningModule):
         [
             tta.HorizontalFlip(),
             tta.Rotate90(angles=[0, 90, 180, 270]),
-            tta.Scale([1, 0.8, 0.6], interpolation="nearest")
+            tta.Scale([1, 0.84, 0.68], interpolation="nearest")
         ])
         tta_model = tta.SegmentationTTAWrapper(self.model, ttaD4Scale, merge_mode='mean')
         y_pred = tta_model(x)

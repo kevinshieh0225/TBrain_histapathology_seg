@@ -35,3 +35,28 @@ U+_nc_ef4ap_FTL_10fd9       0.892483    0.884145    0.900980
 3. loss (regularization)    Diceloss
 4. Augmentation             ColorJitter ElasticTransform Flip ShiftScaleRotate
 5. post processing          connectTH
+
+Good Public Image
+Public_00000000
+Public_00000001
+Public_00000003
+Public_00000005
+Public_00000007
+Public_00000008
+Public_00000011
+Public_00000016
+Public_00000023
+Public_00000038
+Public_00000041
+Public_00000042
+Public_00000047
+Public_00000049
+Public_00000057
+Public_00000061
+Public_00000062
+Public_00000064
+Public_00000070
+Public_00000086
+Public_00000088
+Public_00000099
+Public_00000102
