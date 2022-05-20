@@ -28,8 +28,8 @@ def main():
             trainprocess(project, name, ds_cfg)
             wandb.finish()
     else:
-        ds_cfg['train_valid_list'] = fold_list_root + '_0.json'
-        name = ds_cfg['name'] + f'_{n_fold}fd0'
+        ds_cfg['train_valid_list'] = fold_list_root + '_4.json'
+        name = ds_cfg['name'] + f'_{n_fold}fd4'
         trainprocess(project, name, ds_cfg)
 
 def trainprocess(project, name, ds_cfg):

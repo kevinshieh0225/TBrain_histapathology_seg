@@ -7,11 +7,11 @@ import copy
 
 name = 'voting'
 model_path = {
-        'U+_nc_moreaug_FTL_fd0':1,
-        'U+_nc_moreaug_FTL_fd1':1,
-        'U+_nc_ef4ap_FTL_5fd2':1,
-        'U+_nc_ef4ap_FTL_5fd3':1,
-        'U+_nc_ef4ap_FTL_5fd4':1,
+        'U+_nc_ef4ap_FTL_10fd0':1,
+        'U+_nc_ef4ap_FTL_10fd5':1,
+        'U+_nc_ef4ap_FTL_10fd4':1,
+        'U+_nc_ef4ap_FTL_10fd6':1,
+        'U+_nc_ef4ap_FTL_10fd7':1,
         }
 height = 942
 width = 1716

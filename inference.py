@@ -7,7 +7,7 @@ from utils.config import load_setting, loadmodel
 import copy
 
 THRESHOLD = 0.75
-pretrain_path = './result/U+_nc_moreaug_FTL/'
+pretrain_path = './result/U+_nc_ef4ap_FTLs_10fd4/'
 
 def connectTH(mask, map, mode=1, threshold=150):
     # identify pixel connected size

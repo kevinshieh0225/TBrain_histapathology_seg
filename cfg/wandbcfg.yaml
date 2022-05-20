@@ -13,7 +13,7 @@ accumulate_grad_batches:    # default: 1
 classes:
   value: ['stas']
 epochs:
-  value: 120
+  value: 80
 
 # timm-efficientnet-b4, tu-tf_efficientnetv2_s_in21ft1k, se_resnext50_32x4d
 model.encoder_name:
