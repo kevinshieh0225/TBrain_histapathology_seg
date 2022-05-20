@@ -83,7 +83,13 @@ class Litsmp(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
-        tta_model = tta.SegmentationTTAWrapper(self.model, tta.aliases.d4_transform(), merge_mode='mean')
+        ttaD4Scale = tta.base.Compose(
+        [
+            tta.HorizontalFlip(),
+            tta.Rotate90(angles=[0, 90, 180, 270]),
+            tta.Scale([1, 0.8, 0.6], interpolation="nearest")
+        ])
+        tta_model = tta.SegmentationTTAWrapper(self.model, ttaD4Scale, merge_mode='mean')
         y_pred = tta_model(x)
         loss = self.loss(y_pred, y)
         self.log(f"valid loss", loss, on_epoch=True, prog_bar=True)

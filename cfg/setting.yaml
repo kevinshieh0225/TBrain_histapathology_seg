@@ -1,8 +1,8 @@
 project: 'TBrain_histapathology_segmentation'
-name: 'U+_nc_ef4ap_FTLs'
+name: 'U+_nc_ef4ap_sDL'
 
 # data, /work/u7085556/TBrain_histapathology_seg
-root: 'data'
+root: '/work/u7085556/TBrain_histapathology_seg'
 dataset_root: 'SEG_Train_Datasets'
 crop_dataset_root: 'SEG_Train_Datasets_Resize'
 
@@ -13,11 +13,11 @@ inference_root: 'inference'
 listroot: './trainlist'
 # 5fold_list, 10fold_list
 train_valid_list: '10fold_list'
-# not cross validation: 0, 5-fold: 1
+# not cross validation: 0, else: 1
 iscvl: 1
 
 #train model soup (disable use soup : 0)
-soup: 1 
+soup: 0
 # number of models to train
 ningredients: 5
 # if using pretrained model on fold 4 base_fold should be the same in number

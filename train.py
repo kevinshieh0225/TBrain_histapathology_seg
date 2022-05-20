@@ -29,7 +29,7 @@ def main():
             trainprocess(project, name, ds_cfg)
             wandb.finish()
     elif(ds_cfg['iscvl'] == 1):
-        for n in range(1, n_fold):
+        for n in [0, 3, 4, 5, 6, 7, 8]:
             name = ds_cfg['name'] + f'_{n_fold}fd{n}'
             ds_cfg['train_valid_list'] = f'{fold_list_root}_{n}.json'
             print(f'\nStart fold {n}/{n_fold} experiment\n')

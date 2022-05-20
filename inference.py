@@ -8,7 +8,7 @@ from utils.config import load_setting, loadmodel
 import copy
 
 THRESHOLD = 0.75
-pretrain_path = './result/U+_nc_ef4ap_FTLs_10fd4/'
+pretrain_path = './result/U+_nc_ef4ap_FTL_10fd7/'
 device = 'cuda' # cpu
 
 def connectTH(mask, map, mode=1, threshold=150):
@@ -27,9 +27,6 @@ if __name__ == "__main__":
     opts_dict, model = loadmodel(pretrain_path, load_last)
     model.eval()
     model.to(device)
-
-    opts_dict, model = loadmodel(pretrain_path)
-    model.eval()
     
     ds_dict = load_setting()
     Public_Image = ds_dict['public_root']
