@@ -78,12 +78,11 @@ def get_training_augmentation():
     return albu.Compose([
         albu.Flip(p=0.75),
         albu.ColorJitter(brightness=0.1, hue=0.15, p=0.8),
-        albu.ShiftScaleRotate(shift_limit=0.06 ,rotate_limit=20, p=0.8),
-
         albu.OneOf([
-            albu.ElasticTransform(),
-        ], p=0.5),
-
+            albu.ShiftScaleRotate(rotate_limit=25, scale_limit=0.05),
+            albu.ShiftScaleRotate(scale_limit=(-0.5, 0.2), shift_limit=0 ,rotate_limit=0),
+        ], p=0.8),
+        albu.ElasticTransform(p=0.5),
         albu.OneOf([
             albu.RandomBrightnessContrast(),
             albu.RandomGamma(),

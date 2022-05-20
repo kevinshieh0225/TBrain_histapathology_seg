@@ -75,8 +75,6 @@ if __name__ == "__main__":
                 mask = torch.sigmoid(soup_model(image)).squeeze().cpu().numpy()
             mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
             mask = np.where(mask > THRESHOLD, 1, 0)
-            # connectTH(mask, mask, mode=1, threshold=420)
-            # connectTH(mask, mask^1, mode=0, threshold=50000)
             mask_copy = copy.deepcopy(mask)
             connectTH(mask_copy, mask_copy, mode=1, threshold=400)
             if np.sum(mask_copy) > 400:

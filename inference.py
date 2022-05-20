@@ -7,7 +7,7 @@ from utils.config import load_setting, loadmodel
 import copy
 
 THRESHOLD = 0.75
-pretrain_path = './result/U+_nc_ef4ap_FTL_10fd2'
+pretrain_path = './result/U+_nc_ef4ap_FTL_10fd7/'
 device = 'cuda' # cpu
 
 def connectTH(mask, map, mode=1, threshold=150):
