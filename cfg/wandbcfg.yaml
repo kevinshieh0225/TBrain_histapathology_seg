@@ -2,7 +2,7 @@
 iscrop:                     # crop=1, noncrop=0
   value: 0
 loadckpt:                     # default: None, ./checkpoint
-  value: 'result/U+_nc_ef4ap_FTL_10fd6'
+  value: 'None'
 loadlast:
   value: False
 
@@ -26,14 +26,7 @@ model.type:                 # DeepLabV3, DeepLabV3Plus, Unet, UnetPlusPlus
   value: UnetPlusPlus
 
 loss.type:
-  value: FocalTverskyLoss   
-# BCEFocalTverskyLoss
-# loss.BCEratio:
-#   value: 1
-# loss.alpha:
-#   value: 0.5
-# loss.gamma:
-#   value: 1
+  value: FocalTverskyLoss
 
 optim.lr:
   value: 0.01    # 0.01, 0.001, 0.0003
