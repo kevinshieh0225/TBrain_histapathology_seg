@@ -51,7 +51,7 @@ if __name__ == "__main__":
     soup_model.load_state_dict(model_weights[0])
     soup_model.eval()
     soup_model.to(device)
-
+    ## save the soup model in the results/soup.
     ds_dict = load_setting()
     Public_Image = ds_dict['public_root']
     Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname']+'_soup')

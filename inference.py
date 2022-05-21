@@ -1,4 +1,3 @@
-from operator import truediv
 import os, torch, cv2
 import numpy as np
 from scipy import ndimage
