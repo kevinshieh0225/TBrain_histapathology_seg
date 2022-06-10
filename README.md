@@ -1,13 +1,43 @@
 # TBrain_histapathology_seg
 TBrain histapathology segmentation contest.
 
-## pre-setting
+## Pre-setting
 ```sh
-sh preprocess.sh
+$sh preprocess.sh
 ```
-pretrain weight is on [GDrive](https://drive.google.com/drive/folders/1UgTa4WhK3WPqX168u9uftHxLsafFYtAZ?fbclid=IwAR0XvHfJDLGW0XNj7SV-Dq4D0_4dPzIKy0RMiGNTokD9Nfc28y0rkT2prD4)
+`./trainlist` will fit in the cross validation training/validation set
+In current version we put some public/private image into training,
+so if you want to re-run training, you have add the specific image into 
+training data. 
 
-## cross validation
+## Config
+Config file for training and inferencing model is in `./cfg`
+`setting.yaml` is experiment name, image root, inference path,
+                use crossvalidation , use soup setting.
+`wandbcfg.yaml` is training model hyperparameter.
+
+## Training
+After setting config file, start training:
+```sh
+$python training.py
+```
+The training ckpt will save in `./result`
+We provide Data Distributed Parallel and will automatically detect gpu number.
+
+## Inference
+Modified `inference.py` for to assign inference experiment ckpt.
+Use `voting.py` and `embedding.py` to get majority agreement mask.
+
+```sh
+$python inference.py
+$python voting.py
+$python embedding.py
+```
+Pretrain weight can be download in [GDrive](https://drive.google.com/drive/folders/1UgTa4WhK3WPqX168u9uftHxLsafFYtAZ?fbclid=IwAR0XvHfJDLGW0XNj7SV-Dq4D0_4dPzIKy0RMiGNTokD9Nfc28y0rkT2prD4)
+
+Or best model ckpt in private score is `base_DL_plus_10fd0`
+
+## cross validation result in public
 ```
 Name                        f1-score    precision   recall
 U+_nc_ef4ap_FTL_10fd4_soup5 0.904259    0.899413    0.909157        V
@@ -33,52 +63,3 @@ U+_nc_ef4ap_FTL_10fd7       0.897821    0.886498    0.909436    3
 U+_nc_ef4ap_FTL_10fd8       0.893720    0.891105    0.896352    7
 U+_nc_ef4ap_FTL_10fd9       0.892483    0.884145    0.900980
 ```
-
-## Exp
-1. backbone                 Unetplusplus timm-efficientnetb4 advprop
-2. optimizer                SGD with CosineAnnealing Warmup
-3. loss (regularization)    Diceloss
-4. Augmentation             ColorJitter ElasticTransform Flip ShiftScaleRotate
-5. post processing          connectTH
-
-Good Public Image
-Private_00000017
-Private_00000018
-Private_00000021
-Private_00000035
-Private_00000039
-Private_00000064
-Private_00000080
-Private_00000129
-Private_00000134
-Public_00000001
-Public_00000003
-Public_00000008
-Public_00000011
-Public_00000012
-Public_00000023
-Public_00000024
-Public_00000025
-Public_00000026
-Public_00000028
-Public_00000034
-Public_00000037
-Public_00000038
-Public_00000041
-Public_00000042
-Public_00000047
-Public_00000061
-Public_00000064
-Public_00000070
-Public_00000080
-Public_00000082
-Public_00000086
-Public_00000088
-Public_00000091
-Public_00000099
-Public_00000102
-Public_00000107
-Public_00000116
-Public_00000120
-Public_00000125
-Public_00000127
