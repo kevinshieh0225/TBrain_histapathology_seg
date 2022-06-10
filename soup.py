@@ -58,29 +58,26 @@ if __name__ == "__main__":
     os.makedirs(Public_save_path, exist_ok=True)
 
     height = opts_dict['aug']['resize_height']
-    width = height if opts_dict['iscrop'] else 2 * height
+    width = 2 * height
     preprocess = get_preprocessing()
 
-    if opts_dict['iscrop'] == 0:
-        for image_id in tqdm(os.listdir(Public_Image)):
-            image = cv2.imread(os.path.join(Public_Image, image_id))
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            origin_h, origin_w, _ = image.shape
-            if image.shape != (height, width, 3):
-                image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
-            image = preprocess(image=image)['image']
-            image = image.unsqueeze(0)
-            image = image.to(device)
-            with torch.no_grad():
-                mask = torch.sigmoid(soup_model(image)).squeeze().cpu().numpy()
-            mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
-            mask = np.where(mask > THRESHOLD, 1, 0)
-            mask_copy = copy.deepcopy(mask)
-            connectTH(mask_copy, mask_copy, mode=1, threshold=400)
-            if np.sum(mask_copy) > 400:
-                mask = mask_copy
-            connectTH(mask, mask^1, mode=0, threshold=50000)
-            image_id = image_id.replace('jpg', 'png')
-            cv2.imwrite(os.path.join(Public_save_path, image_id), mask*255)
-    else: 
-        pass
+    for image_id in tqdm(os.listdir(Public_Image)):
+        image = cv2.imread(os.path.join(Public_Image, image_id))
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        origin_h, origin_w, _ = image.shape
+        if image.shape != (height, width, 3):
+            image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
+        image = preprocess(image=image)['image']
+        image = image.unsqueeze(0)
+        image = image.to(device)
+        with torch.no_grad():
+            mask = torch.sigmoid(soup_model(image)).squeeze().cpu().numpy()
+        mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
+        mask = np.where(mask > THRESHOLD, 1, 0)
+        mask_copy = copy.deepcopy(mask)
+        connectTH(mask_copy, mask_copy, mode=1, threshold=400)
+        if np.sum(mask_copy) > 400:
+            mask = mask_copy
+        connectTH(mask, mask^1, mode=0, threshold=50000)
+        image_id = image_id.replace('jpg', 'png')
+        cv2.imwrite(os.path.join(Public_save_path, image_id), mask*255)

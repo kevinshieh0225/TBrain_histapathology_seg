@@ -1,21 +1,19 @@
 # https://smp.readthedocs.io/
-iscrop:                     # crop=1, noncrop=0
-  value: 0
 loadckpt:                     # default: None, ./checkpoint
   value: 'None'
 loadlast:
   value: False
 
 aug.resize_height:
-  value: 800
+  value: 448
 batchsize:
-  value: 2
+  value: 8
 accumulate_grad_batches:    # default: 1
   value: 1
 classes:
   value: ['stas']
 epochs:
-  value: 80
+  value: 105
 
 # timm-efficientnet-b4, tu-tf_efficientnetv2_s_in21ft1k, se_resnext50_32x4d
 model.encoder_name:
@@ -55,9 +53,9 @@ optim.nesterov:
 sched.type:
   value: CosineAnnealingWR
 sched.T_0:
-  value: 80
+  value: 105
 sched.T_mult:
   value: 1
 sched.eta_min:
-  value: 0.0008
+  value: 0.001
 

@@ -53,8 +53,7 @@ def trainprocess(project, name, ds_cfg, train_cfg = 'None', soup = False ):
         model = Litsmp(opts_dict)
 
     # dataloader
-    dataset_root = ds_cfg['crop_dataset_root'] \
-        if opts_dict['iscrop'] == 1 else ds_cfg['dataset_root']
+    dataset_root = ds_cfg['dataset_root']
     imagePaths = os.path.join(dataset_root, 'Train_Images')
     maskPaths = os.path.join(dataset_root, 'Train_Masks')
     trainloader, validloader = create_trainloader(

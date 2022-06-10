@@ -79,8 +79,8 @@ def get_training_augmentation():
         albu.Flip(p=0.75),
         albu.ColorJitter(brightness=0.1, hue=0.15, p=0.8),
         albu.OneOf([
-            albu.ShiftScaleRotate(rotate_limit=25, scale_limit=0.05),
-            albu.ShiftScaleRotate(scale_limit=(-0.5, 0.2), shift_limit=0 ,rotate_limit=0),
+            albu.ShiftScaleRotate(rotate_limit=20),
+            # albu.ShiftScaleRotate(scale_limit=(-0.5, 0.2), shift_limit=0 ,rotate_limit=0),
         ], p=0.8),
         albu.ElasticTransform(p=0.5),
         albu.OneOf([
@@ -88,7 +88,7 @@ def get_training_augmentation():
             albu.RandomGamma(),
         ], p=0.5),
 
-        albu.Sharpen(lightness=(0.8, 1.2), p=0.4),
+        albu.Sharpen(lightness=(0.8, 1.2), p=0.6),  # p=0.4
     ])
 
 def get_preprocessing():
@@ -113,25 +113,15 @@ def get_preprocessing():
 def splitdataset(img_path, mask_path, opts_dict, ds_cfg):
     classes = opts_dict['classes']
     height = opts_dict['aug']['resize_height']
-    width = height if opts_dict['iscrop'] else height * 2
+    width = height * 2
     opts_dict['aug']['resize_width'] = width
 
     train_test_list = json.load(open(ds_cfg['train_valid_list']))
     trainlist = train_test_list['train']
     validlist = train_test_list['valid']
 
-    if(opts_dict['iscrop'] == 1):
-        trainlist = [f'{image_id}_0' for image_id in trainlist] + \
-                    [f'{image_id}_1' for image_id in trainlist] + \
-                    [f'{image_id}_2' for image_id in trainlist]
-        validlist = [f'{image_id}_0' for image_id in validlist] + \
-                    [f'{image_id}_1' for image_id in validlist] + \
-                    [f'{image_id}_2' for image_id in validlist]
-        xtrain = [os.path.join(img_path, f'{image_id}.png') for image_id in trainlist]
-        xvalid = [os.path.join(img_path, f'{image_id}.png') for image_id in validlist]
-    else:
-        xtrain = [os.path.join(img_path, f'{image_id}.jpg') for image_id in trainlist]
-        xvalid = [os.path.join(img_path, f'{image_id}.jpg') for image_id in validlist]
+    xtrain = [os.path.join(img_path, f'{image_id}.jpg') for image_id in trainlist]
+    xvalid = [os.path.join(img_path, f'{image_id}.jpg') for image_id in validlist]
 
     ytrain = [os.path.join(mask_path, f'{image_id}.png') for image_id in trainlist]
     yvalid = [os.path.join(mask_path, f'{image_id}.png') for image_id in validlist]

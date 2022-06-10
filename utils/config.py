@@ -4,20 +4,23 @@ import wandb
 from utils.network import Litsmp
 from pytorch_lightning.loggers import WandbLogger
 
-def loadmodel(pretrain_path, load_last = False, config_path = 'None' ):
+def loadmodel(pretrain_path, load_last = False, config_path = 'None'):
     for pth in os.listdir(pretrain_path):
-        if '.ckpt' in pth:
+        if 'pt' in pth:
             if 'last' in pth and load_last == True:
                 weight = os.path.join(pretrain_path, pth)
                 print(weight)
-                break
             elif 'last' not in pth and load_last == False:
                 weight = os.path.join(pretrain_path, pth)
                 print(weight)
-                break
+
     checkpoint_dict = torch.load(weight)
     # loading your own config (soup)
-    if config_path != 'None':
+    if not '.ckpt' in weight:
+        opts_dict = load_wdb_config(os.path.join(pretrain_path, 'expconfig.yaml'))
+        model = Litsmp(opts_dict=opts_dict)
+        model.load_state_dict(checkpoint_dict)
+    elif config_path != 'None':
         opts_dict = load_wdb_config(config_path)
         model = Litsmp.load_from_checkpoint(weight, opts_dict=opts_dict)
     # loading predefined config from the chekpoint
@@ -41,11 +44,9 @@ def load_setting(cfgpath = './cfg/setting.yaml'):
     with open(cfgpath, 'r') as fp:
         ds_dict = yaml.load(fp, Loader=yaml.FullLoader)
     ds_dict['dataset_root'] = os.path.join(ds_dict['root'], ds_dict['dataset_root'])
-    ds_dict['crop_dataset_root'] = os.path.join(ds_dict['root'], ds_dict['crop_dataset_root'])
     ds_dict['train_valid_list'] = os.path.join(ds_dict['listroot'], ds_dict['train_valid_list'])
     ds_dict['public_root'] = os.path.join(ds_dict['root'], ds_dict['public_root'])
     ds_dict['inference_root'] = os.path.join(ds_dict['root'], ds_dict['inference_root'])
-    ds_dict['crop_public_root'] = os.path.join(ds_dict['root'], ds_dict['crop_public_root'])
 
     return ds_dict
 
@@ -53,7 +54,6 @@ def load_setting(cfgpath = './cfg/setting.yaml'):
 def wandb_config(project, name, cfg='cfg/wandbcfg.yaml'):
     expname = searchnewname(name)
     wandb_logger = WandbLogger(project=project,
-                               entity="aicup2022",
                                name=expname,
                                config=cfg,
                                reinit=True)

@@ -4,20 +4,19 @@ from scipy import ndimage
 from tqdm import tqdm
 from utils.dataloader import get_preprocessing
 from utils.config import load_setting, loadmodel
-import copy
 
+height = 800
+width = 1600
 THRESHOLD = 0.75
 pretrain_path_list = [
-        'U+_nc_ef4ap_sDL_10fd0',
-        'U+_nc_ef4ap_sDL_10fd3',
-        'U+_nc_ef4ap_sDL_10fd4',
-        'U+_nc_ef4ap_sDL_10fd5',
-        'U+_nc_ef4ap_sDL_10fd6',
-        'U+_nc_ef4ap_sDL_10fd7',
-        'U+_nc_ef4ap_sDL_10fd8',
+        'base_DL_plus_10fd0',
+        # 'base_DL_plus_10fd3',
+        # 'U+_nc_ef4ap_sDL_10fd3',
+        # 'U+_nc_ef4ap_sDL_10fd7',
+        # 'U+_nc_ef4ap_FTL_10fd4_soup5',
         ]
 pretrain_path_list = [os.path.join('./result', pth) for pth in pretrain_path_list]
-device = 'cuda' # cpu
+device = 'cuda' # cpu cuda
 load_last = False
 
 def connectTH(mask, map, mode=1, threshold=150):
@@ -45,27 +44,20 @@ if __name__ == "__main__":
             Public_save_path = os.path.join(ds_dict['inference_root'], opts_dict['expname'])
         os.makedirs(Public_save_path, exist_ok=True)
 
-        height = opts_dict['aug']['resize_height']
-        width = height if opts_dict['iscrop'] else 2 * height
         preprocess = get_preprocessing()
         
-        if opts_dict['iscrop'] == 0:
-            for image_id in tqdm(os.listdir(Public_Image)):
-                image = cv2.imread(os.path.join(Public_Image, image_id))
-                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                origin_h, origin_w, _ = image.shape
-                if image.shape != (height, width, 3):
-                    image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
-                image = preprocess(image=image)['image']
-                image = image.unsqueeze(0).to(device)
-                with torch.no_grad():
-                    mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
-                mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
-                mask = np.where(mask > THRESHOLD, 1, 0)
-                mask_copy = copy.deepcopy(mask)
-                connectTH(mask_copy, mask_copy, mode=1, threshold=150)
-                if np.sum(mask_copy) > 150:
-                    mask = mask_copy
-                connectTH(mask, mask^1, mode=0, threshold=50000)
-                image_id = image_id.replace('jpg', 'png')
-                cv2.imwrite(os.path.join(Public_save_path, image_id), mask*255)
+        for image_id in tqdm(os.listdir(Public_Image)):
+            image = cv2.imread(os.path.join(Public_Image, image_id))
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            origin_h, origin_w, _ = image.shape
+            if image.shape != (height, width, 3):
+                image = cv2.resize(image, (width, height), interpolation=cv2.INTER_LANCZOS4)
+            image = preprocess(image=image)['image']
+            image = image.unsqueeze(0).to(device)
+            with torch.no_grad():
+                mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
+            mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
+            mask = np.where(mask > THRESHOLD, 1, 0)
+            connectTH(mask, mask^1, mode=0, threshold=50000)
+            image_id = image_id.replace('jpg', 'png')
+            cv2.imwrite(os.path.join(Public_save_path, image_id), mask*255)

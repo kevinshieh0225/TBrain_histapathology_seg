@@ -1,14 +1,12 @@
 project: 'TBrain_histapathology_segmentation'
-name: 'U+_nc_ef4ap_sDL_fd4'
+name: 'base_small'
 
 # data, /work/u7085556/TBrain_histapathology_seg
 root: '/work/u7085556/TBrain_histapathology_seg'
 dataset_root: 'SEG_Train_Datasets'
-crop_dataset_root: 'SEG_Train_Datasets_Resize'
 
 #Public_Image
 public_root: 'Public_Image'
-crop_public_root: 'Public_Image_Resize'
 inference_root: 'inference'
 listroot: './trainlist'
 # 5fold_list, 10fold_list
