@@ -9,11 +9,11 @@ height = 800
 width = 1600
 THRESHOLD = 0.75
 pretrain_path_list = [
-        'base_DL_plus_10fd0',
+        # 'base_DL_plus_10fd0',
         # 'base_DL_plus_10fd3',
         # 'U+_nc_ef4ap_sDL_10fd3',
         # 'U+_nc_ef4ap_sDL_10fd7',
-        # 'U+_nc_ef4ap_FTL_10fd4_soup5',
+        'U+_nc_ef4ap_FTL_10fd4_soup5',
         ]
 pretrain_path_list = [os.path.join('./result', pth) for pth in pretrain_path_list]
 device = 'cuda' # cpu cuda
@@ -58,6 +58,6 @@ if __name__ == "__main__":
                 mask = torch.sigmoid(model(image)).squeeze().cpu().numpy()
             mask = cv2.resize(mask, (origin_w, origin_h), interpolation=cv2.INTER_LANCZOS4)
             mask = np.where(mask > THRESHOLD, 1, 0)
-            connectTH(mask, mask^1, mode=0, threshold=50000)
+            # connectTH(mask, mask^1, mode=0, threshold=50000)
             image_id = image_id.replace('jpg', 'png')
             cv2.imwrite(os.path.join(Public_save_path, image_id), mask*255)

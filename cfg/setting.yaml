@@ -1,18 +1,21 @@
 project: 'TBrain_histapathology_segmentation'
-name: 'base_small'
+name: 'base_exp_model'
 
-# data, /work/u7085556/TBrain_histapathology_seg
+# Data path
 root: '/work/u7085556/TBrain_histapathology_seg'
+# Data path for training
 dataset_root: 'SEG_Train_Datasets'
 
-#Public_Image
-public_root: 'Public_Image'
-inference_root: 'inference'
+# Train list for cross validation training/validation
 listroot: './trainlist'
 # 5fold_list, 10fold_list
 train_valid_list: '10fold_list'
-# not cross validation: 0, else: 1
-iscvl: 0
+# not use cross validation: 0, else: 1
+iscvl: 1
+
+# Public_Image for inference
+public_root: 'Public_Image'
+inference_root: 'inference'
 
 #train model soup (disable use soup : 0)
 soup: 0

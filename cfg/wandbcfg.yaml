@@ -5,11 +5,11 @@ loadlast:
   value: False
 
 aug.resize_height:
-  value: 448
+  value: 800
 batchsize:
-  value: 8
+  value: 2
 accumulate_grad_batches:    # default: 1
-  value: 1
+  value: 6
 classes:
   value: ['stas']
 epochs:

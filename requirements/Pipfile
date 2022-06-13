@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+segmentation-models-pytorch = "*"
+pytorch-lightning = "*"
+scikit-learn = "*"
+opencv-python = "*"
+albumentations = "*"
+wandb = "*"
+ipykernel = "*"
+matplotlib = "*"
+ttach = "*"
+timm = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
